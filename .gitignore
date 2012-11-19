@@ -3,7 +3,7 @@ config.php
 
 #Eclipse
 *.pydevproject
-.project
+#.project
 .metadata
 bin/**
 tmp/**
@@ -50,4 +50,4 @@ local.properties
 
 # Eclipse project files
 .classpath
-.project
+#.project
