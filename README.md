@@ -27,6 +27,7 @@ Requirements
 --------------------------------------
 Client:
 - Phone with at least Android version 2.2 (API level 8)
+
 Server:
 - Webserver with PHP and MySQL
 - ability to open outgoing http connections (used to query other user's location on different servers)
@@ -36,6 +37,7 @@ Install
 Client:
 - Install apk on any recent Android smartphone
 - Enable some kind of data connection and "Background data"
+
 Server:
 - Copy files to Webspace
 - Copy config.php.sample to config.php and edit
