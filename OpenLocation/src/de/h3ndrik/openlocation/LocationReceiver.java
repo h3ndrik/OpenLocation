@@ -343,6 +343,11 @@ public class LocationReceiver extends BroadcastReceiver {
 				e2.printStackTrace();
 			}
 
+                        /* Garbage collection */
+                        row = null;
+                        data = null;
+                        json = null;
+
 			/* http */
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 
@@ -430,6 +435,9 @@ public class LocationReceiver extends BroadcastReceiver {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+			/* Garbage collection */
+			data_compressed = null;
 
 			db.dbhelper.close();
 
