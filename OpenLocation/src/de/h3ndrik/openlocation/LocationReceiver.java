@@ -82,6 +82,7 @@ public class LocationReceiver extends BroadcastReceiver {
 				// Toast.makeText(context, "removing LocationListener",
 				// Toast.LENGTH_SHORT).show();
 				locationManager.removeUpdates(locationListener);
+				//TODO: give LocationManager time to settle
 				locationManager.requestLocationUpdates(
 						LocationManager.NETWORK_PROVIDER, 0, 0,
 						locationListener);	// Request network location instead
