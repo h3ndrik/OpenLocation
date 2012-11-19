@@ -121,6 +121,12 @@ public class LocationReceiver extends BroadcastReceiver {
 								.getSystemService(Context.LOCATION_SERVICE);
 						// Toast.makeText(con, "removing LocationListener",
 						// Toast.LENGTH_SHORT).show();
+					try {
+                        	                Thread.sleep(4000);
+                                	}
+                                	} catch (InterruptedException e) {
+                                        	// continue
+                                	}
 						locationManager.removeUpdates(this);
 					}
 
