@@ -1,0 +1,36 @@
+<resources>
+
+    <string name="app_name">OpenLocation</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <string name="menu_refresh">Aktualisieren</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="menu_exit">Beenden</string>
+    
+    <string name="pref_cat_username">Login Details</string>
+    <string name="pref_cat_username_summary">Benutzername und Passwort</string>
+    <string name="pref_cat_settings">Einstellungen</string>
+    <string name="pref_cat_settings_summary">Weitere Einstellungen</string>
+    <string name="pref_username">Benutzername</string>
+    <string name="pref_username_summary">Benutzername im Format: username@server</string>
+    <string name="pref_password">Passwort</string>
+    <string name="pref_password_summary"></string>
+    <string name="pref_activate">Aktivieren</string>
+    <string name="pref_activate_summary">Regelmäßige Positionsupdates senden</string>
+    <string name="pref_activeupdate">GPS</string>
+    <string name="pref_activeupdate_summary">Aktiv (mit GPS) nach der Position suchen</string>
+    
+    <string name="msg_wrongcredentials">Benutzername oder Passwort falsch</string>
+    <string name="msg_updatesdisabled">Positionsupdates deaktiviert</string>
+    <string name="msg_usernameinvalid">Benutzername hat falsches Format</string>
+    <string name="msg_usernotconfigured">Bitte Benutzernamen/Passwort einstellen</string>
+
+    <string name="msg_providerdisabled">Provider ist deaktiviert</string>
+    <string name="msg_providerenabled">Provider ist aktiviert</string>
+    <string name="msg_gpsdisabled">GPS ist ausgeschaltet</string>
+    <string name="msg_noconnection">Keine Internetverbindung</string>
+    
+    <string name="title_activity_open_location_main">OpenLocation</string>
+    <string name="title_activity_open_location_prefs">OpenLocation Einstellungen</string>
+
+</resources>
