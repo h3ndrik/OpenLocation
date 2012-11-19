@@ -82,7 +82,12 @@ public class LocationReceiver extends BroadcastReceiver {
 				// Toast.makeText(context, "removing LocationListener",
 				// Toast.LENGTH_SHORT).show();
 				locationManager.removeUpdates(locationListener);
-				//TODO: give LocationManager time to settle
+				//give LocationManager time to settle
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// continue
+				}
 				locationManager.requestLocationUpdates(
 						LocationManager.NETWORK_PROVIDER, 0, 0,
 						locationListener);	// Request network location instead
@@ -344,10 +349,9 @@ public class LocationReceiver extends BroadcastReceiver {
 				e2.printStackTrace();
 			}
 
-                        /* Garbage collection */
-                        row = null;
-                        data = null;
-                        json = null;
+            /* Garbage collection */
+            data = null;
+            json = null;
 
 			/* http */
 			DefaultHttpClient httpclient = new DefaultHttpClient();
