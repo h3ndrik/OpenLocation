@@ -13,7 +13,7 @@ tmp/**/*
 *.swp
 *~.nib
 local.properties
-.classpath
+#.classpath
 .settings/
 .loadpath
 
@@ -49,5 +49,5 @@ gen/
 local.properties
 
 # Eclipse project files
-.classpath
+#.classpath
 #.project
