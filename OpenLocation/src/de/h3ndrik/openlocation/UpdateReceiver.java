@@ -35,6 +35,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
@@ -47,7 +48,10 @@ public class UpdateReceiver extends BroadcastReceiver {
 		
 		Log.d(DEBUG_TAG, "got a Broadcast");
 		
-			// This update came (TODO: most probably?) from a recurring alarm
+		if (intent.hasExtra("de.h3ndrik.openlocation.update")) {
+			Log.d(DEBUG_TAG, "Update requested (from Alarm)");
+		
+			// This update came from a recurring alarm
 			// We defined an inexact Alarm to send data only if phone is active
 			// anyway
 			// hence, save battery. So do network stuff immediately.
@@ -71,6 +75,10 @@ public class UpdateReceiver extends BroadcastReceiver {
 			}
 
 			db.dbhelper.close();
+		}
+		else {
+			Log.d(DEBUG_TAG, "Not sure who sent this Broadcast");
+		}
 
 	}
 
@@ -101,6 +109,12 @@ public class UpdateReceiver extends BroadcastReceiver {
 			//		Toast.LENGTH_SHORT).show();
 			return;
 		}
+		
+		/* DEBUG */
+		TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+		if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE && telephonyManager.getDataActivity() == TelephonyManager.DATA_ACTIVITY_DORMANT)
+			Log.d(DEBUG_TAG, "Had to wake cellular data, sorry");
+		/* END DEBUG */
 		
 		Log.d(DEBUG_TAG, "sendToServer(): user: " + Utils.getUsername(context) + " @ " + Utils.getDomain(context));
 		

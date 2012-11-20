@@ -29,6 +29,7 @@ public class Utils { // TODO: Rename class?
 
 		Intent locationIntent = new Intent(context, LocationReceiver.class);
 		Intent updateIntent = new Intent(context, UpdateReceiver.class);
+		updateIntent.putExtra("de.h3ndrik.openlocation.update", "true");
 		PendingIntent pendingLocationIntent = PendingIntent.getBroadcast(context, 0, locationIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent,
@@ -59,6 +60,7 @@ public class Utils { // TODO: Rename class?
 
 		Intent locationIntent = new Intent(context, LocationReceiver.class);
 		Intent updateIntent = new Intent(context, UpdateReceiver.class);
+		updateIntent.putExtra("de.h3ndrik.openlocation.update", "true");
 		PendingIntent pendingLocationIntent = PendingIntent.getBroadcast(context, 0, locationIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent,
