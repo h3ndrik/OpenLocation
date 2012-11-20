@@ -3,7 +3,6 @@
  */
 package de.h3ndrik.openlocation.util;
 
-import java.io.UnsupportedEncodingException;
 import java.util.zip.Deflater;
 
 import android.app.AlarmManager;
