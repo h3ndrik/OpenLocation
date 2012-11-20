@@ -12,7 +12,7 @@
     <string name="pref_cat_settings">Settings</string>
     <string name="pref_cat_settings_summary">Properties</string>
     <string name="pref_username">Username</string>
-    <string name="pref_username_summary">Please enter username@server</string>
+    <string name="pref_username_summary">Please enter username[@server]</string>
     <string name="pref_password">Password</string>
     <string name="pref_password_summary">Enter your password</string>
     <string name="pref_activate">Activate</string>

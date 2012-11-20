@@ -41,7 +41,7 @@ L.tileLayer('http://{s}.tile.cloudmade.com/3941788bcb3747e18763298b5ba22953/997/
 
 //map.locate({setView: true, maxZoom: 16});
 
-map.attributionControl.removeFrom(map);
+//map.attributionControl.removeFrom(map);
 
 function onLocationFound(e) {
 }
@@ -165,7 +165,7 @@ map.on('locationerror', onLocationError);
 
     echo "], {color: 'red'}).addTo(map);\n";
 
-    echo "map.setView([" . $row->latitude . ", " . $row->longitude . "], 16);\n";
+    echo "map.setView([" . $row->latitude . ", " . $row->longitude . "], 15);\n";
 
     echo 'var marker = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
     echo '    .bindPopup("' . $user . ', ' . elapsed_time(intval($row->time / 1000)) . '").openPopup();' . "\n\n";

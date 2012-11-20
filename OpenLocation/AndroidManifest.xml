@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.h3ndrik.openlocation"
     android:versionCode="20"
-    android:versionName="alpha" >
+    android:versionName="0.1" >
 
     <uses-sdk
         android:minSdkVersion="8"

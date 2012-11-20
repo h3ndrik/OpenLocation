@@ -29,10 +29,6 @@ public class LocationReceiver extends BroadcastReceiver {
 					LocationManager.KEY_LOCATION_CHANGED);
 			Log.d(DEBUG_TAG, "location update by " + location.getProvider());
 			
-			// Toast.makeText(context, "Location changed : Lat: " +
-			// location.getLatitude() + " Long: " + location.getLongitude(),
-			// Toast.LENGTH_SHORT).show();
-			
 			// write to SQLite
 			DBAdapter db = new DBAdapter(context);
 			db.dbhelper.open_w();

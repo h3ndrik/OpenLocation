@@ -44,12 +44,12 @@ public class UpdateReceiver extends BroadcastReceiver {
 			
 			DBAdapter db = new DBAdapter(context);
 			db.dbhelper.open_r();
-			// Toast.makeText(context, "Last update " +
-			// Long.toString((System.currentTimeMillis() -
-			// db.dbhelper.lastUpdateMillis()) / 1000) + "s ago",
-			// Toast.LENGTH_SHORT).show();
+
 			if (db.dbhelper.lastUpdateMillis() < System.currentTimeMillis() - 15 * 60 * 1000) {
 				LocationReceiver.doActiveUpdate(context, true);
+			}
+			else {
+				Log.d(DEBUG_TAG, "Last update " + (System.currentTimeMillis() - db.dbhelper.lastUpdateMillis())/1000 + "sec ago, skipping");
 			}
 			db.dbhelper.close();
 			
@@ -70,11 +70,11 @@ public class UpdateReceiver extends BroadcastReceiver {
 		if (Utils.getUsername(context) == null) {
 			Log.d(DEBUG_TAG,
 					"sendToServer(): username not set");
-			Toast.makeText(
-					context,
-					context.getResources().getString(
-							R.string.msg_usernotconfigured), Toast.LENGTH_SHORT)
-					.show();
+			//Toast.makeText(
+			//		context,
+			//		context.getResources().getString(
+			//				R.string.msg_usernotconfigured), Toast.LENGTH_SHORT)
+			//		.show();
 			return;
 		}
 		
@@ -84,7 +84,6 @@ public class UpdateReceiver extends BroadcastReceiver {
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 		if (networkInfo == null || !networkInfo.isConnected()) {
 			Log.d(DEBUG_TAG, "sendToServer(): no internet connection");
-			// fail silently
 			//Toast.makeText(
 			//		context,
 			//		context.getResources().getString(R.string.msg_noconnection),
@@ -303,9 +302,9 @@ public class UpdateReceiver extends BroadcastReceiver {
 	
 		@Override
 		protected void onPostExecute(String result) {
-			// Log.d(DEBUG_TAG, "onPostExecute: Returned: " + result);
 			if (result != null && result.startsWith("Error"))
-				Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+				Log.d(DEBUG_TAG, "result");
+				//Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
 		}
 		
 	}

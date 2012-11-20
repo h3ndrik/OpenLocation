@@ -12,7 +12,7 @@
     <string name="pref_cat_settings">Einstellungen</string>
     <string name="pref_cat_settings_summary">Weitere Einstellungen</string>
     <string name="pref_username">Benutzername</string>
-    <string name="pref_username_summary">Benutzername im Format: username@server</string>
+    <string name="pref_username_summary">Benutzername im Format: username[@server]</string>
     <string name="pref_password">Passwort</string>
     <string name="pref_password_summary"></string>
     <string name="pref_activate">Aktivieren</string>

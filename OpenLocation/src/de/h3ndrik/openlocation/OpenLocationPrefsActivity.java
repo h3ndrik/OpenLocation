@@ -46,9 +46,15 @@ public class OpenLocationPrefsActivity extends PreferenceActivity implements
 		if (key.equals("activate")) {
 			Utils.startReceiver(getBaseContext(), true);
 		} else if (key.equals("username")) {
-			getPreferenceScreen().findPreference("username").setSummary(
-					sharedPreferences.getString("username", getResources()
-							.getString(R.string.pref_username_summary)));
+			if (sharedPreferences.getString("username", "").equals("")) {
+				getPreferenceScreen().findPreference("username").setSummary(getResources()
+							.getString(R.string.pref_username_summary));
+			}
+			else {
+				getPreferenceScreen().findPreference("username").setSummary(
+						sharedPreferences.getString("username", getResources()
+								.getString(R.string.pref_username_summary)));
+			}
 		}
 		
 		/* Clear webview cache if user changes */
