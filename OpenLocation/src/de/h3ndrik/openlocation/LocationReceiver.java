@@ -46,7 +46,7 @@ public class LocationReceiver extends BroadcastReceiver {
 			db.dbhelper.close();
 		}
 
-		if (intent.hasExtra("de.h3ndrik.openlocation.cancelgps")) {
+		if (intent.getAction() != null && intent.getAction().equals("de.h3ndrik.openlocation.cancelgps")) {
 			Log.d(DEBUG_TAG, "cancel GPS");
 
 			cancelUpdates(context);
@@ -133,7 +133,7 @@ public class LocationReceiver extends BroadcastReceiver {
 			AlarmManager alarmManager = (AlarmManager) context
 					.getSystemService(Context.ALARM_SERVICE);
 			Intent i = new Intent(context, LocationReceiver.class);
-			i.putExtra("de.h3ndrik.openlocation.cancelgps", "true");
+			i.setAction("de.h3ndrik.openlocation.cancelgps");
 			PendingIntent pendingIntent = PendingIntent
 					.getBroadcast(context, 0, i,
 							PendingIntent.FLAG_UPDATE_CURRENT);

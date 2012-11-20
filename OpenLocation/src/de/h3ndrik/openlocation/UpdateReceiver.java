@@ -40,7 +40,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 		
 		Log.d(DEBUG_TAG, "got a Broadcast");
 		
-		if (intent.hasExtra("de.h3ndrik.openlocation.update")) {
+		if (intent.getAction() != null && intent.getAction().equals("de.h3ndrik.openlocation.update")) {
 			Log.d(DEBUG_TAG, "Update requested (from Alarm)");
 			
 			DBAdapter db = new DBAdapter(context);
