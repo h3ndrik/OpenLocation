@@ -94,9 +94,14 @@ public class UpdateReceiver extends BroadcastReceiver {
 		}
 		
 		/* DEBUG */
-		TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+		/* TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
 		if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE && telephonyManager.getDataActivity() == TelephonyManager.DATA_ACTIVITY_DORMANT)
-			Log.d(DEBUG_TAG, "Had to wake cellular data, sorry");
+			Log.d(DEBUG_TAG, "Had to wake cellular data, sorry"); */
+		/* LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		Location location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+		if (location.getTime() > db.dbhelper.lastUpdateMillis()) {
+		Log.d(DEBUG_TAG, "LocationManager missed something!");
+		db.dbhelper.insertLocation(location.getTime(), location.getLatitude(), location.getLongitude(), location.getAltitude(), location.getAccuracy(), location.getSpeed(), location.getBearing(), location.getProvider()); */
 		/* END DEBUG */
 		
 		Log.d(DEBUG_TAG, "sendToServer(): user: " + Utils.getUsername(context) + " @ " + Utils.getDomain(context));
