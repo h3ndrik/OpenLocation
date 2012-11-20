@@ -1,7 +1,5 @@
 package de.h3ndrik.openlocation;
 
-import de.h3ndrik.openlocation.util.Utils;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;

@@ -27,10 +27,10 @@ public class Utils { // TODO: Rename class?
 				.getDefaultSharedPreferences(context);
 
 		Intent locationIntent = new Intent(context, LocationReceiver.class);
-		Intent updateIntent = new Intent(context, UpdateReceiver.class);
-		updateIntent.setAction("de.h3ndrik.openlocation.update");
 		PendingIntent pendingLocationIntent = PendingIntent.getBroadcast(context, 0, locationIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
+		Intent updateIntent = new Intent(context, UpdateReceiver.class);
+		updateIntent.setAction("de.h3ndrik.openlocation.update");
 		PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		LocationManager locationManager = (LocationManager) context
@@ -58,18 +58,17 @@ public class Utils { // TODO: Rename class?
 	public static void stopReceiver(Context context) {
 
 		Intent locationIntent = new Intent(context, LocationReceiver.class);
-		Intent updateIntent = new Intent(context, UpdateReceiver.class);
-		updateIntent.setAction("de.h3ndrik.openlocation.update");
 		PendingIntent pendingLocationIntent = PendingIntent.getBroadcast(context, 0, locationIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		LocationManager locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
+		locationManager.removeUpdates(pendingLocationIntent);
+		Intent updateIntent = new Intent(context, UpdateReceiver.class);
+		updateIntent.setAction("de.h3ndrik.openlocation.update");
+		PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager alarmManager = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
-
-		locationManager.removeUpdates(pendingLocationIntent);
 		alarmManager.cancel(pendingUpdateIntent);
 	}
 	

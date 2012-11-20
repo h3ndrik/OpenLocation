@@ -27,7 +27,6 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
