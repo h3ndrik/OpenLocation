@@ -63,7 +63,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 			// Toast.LENGTH_SHORT).show();
 
 			if (db.dbhelper.lastUpdateMillis() < System.currentTimeMillis() - 15 * 60 * 1000) {
-				LocationReceiver.doActiveUpdate(context);
+				LocationReceiver.doActiveUpdate(context, true);
 			}
 
 			db.dbhelper.close();

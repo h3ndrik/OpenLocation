@@ -53,7 +53,7 @@ public class LocationReceiver extends BroadcastReceiver {
 		}
 	}
 	
-	public static void doActiveUpdate(final Context context) {
+	public static void doActiveUpdate(final Context context, Boolean useGPS) {
 		Log.d(DEBUG_TAG, "force active location update");
 		
 		if (locationListener == null) {
@@ -96,7 +96,7 @@ public class LocationReceiver extends BroadcastReceiver {
 
 			SharedPreferences SP = PreferenceManager
 					.getDefaultSharedPreferences(context);
-			if (SP.getBoolean("activeupdate", false)) {
+			if (SP.getBoolean("activeupdate", false) && useGPS) {
 				// We want active lookup
 
 				if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -129,7 +129,7 @@ public class LocationReceiver extends BroadcastReceiver {
 						locationListener);
 			}
 			
-			//cancel updates after timeout with no fix
+			/* cancel updates after timeout with no fix */
 			AlarmManager alarmManager = (AlarmManager) context
 					.getSystemService(Context.ALARM_SERVICE);
 			Intent i = new Intent(context, LocationReceiver.class);
@@ -157,7 +157,8 @@ public class LocationReceiver extends BroadcastReceiver {
 			
 			locationListener = null;
 			
-			//TODO: Request network location if GPS failed
+			// Do network lookup instead
+			LocationReceiver.doActiveUpdate(context, false);
 		}
 		else {
 			Log.d(DEBUG_TAG, "no locationListener present");
