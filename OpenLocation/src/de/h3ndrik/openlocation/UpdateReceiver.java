@@ -74,114 +74,78 @@ public class UpdateReceiver extends BroadcastReceiver {
 
 	}
 
-private void sendToServer(Context context) {
-	
-	DBAdapter db = new DBAdapter(context);
-
-	// Check if something is in database
-	db.dbhelper.open_r();
-	if (db.dbhelper.getLocalLocations() == null
-			|| db.dbhelper.getLocalLocations().getCount() < 1) {
-		Log.d(DEBUG_TAG, "sendToServer(): nothing in database");
-		db.dbhelper.close();
-		return;
-	}
-	db.dbhelper.close();
-
-	// Check the network connection
-	ConnectivityManager connMgr = (ConnectivityManager) context
-			.getSystemService(Context.CONNECTIVITY_SERVICE);
-	NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-	if (networkInfo == null || !networkInfo.isConnected()) {
-		// display error
-		Log.d(DEBUG_TAG, "sendToServer(): no internet connection");
-		Toast.makeText(
-				context,
-				context.getResources().getString(R.string.msg_noconnection),
-				Toast.LENGTH_SHORT).show();
-		return;
-	}
-
-	if (Utils.getUsername(context) == null) {
-		Log.d(DEBUG_TAG,
-				"sendToServer(): username not set");
-		Toast.makeText(
-				context,
-				context.getResources().getString(
-						R.string.msg_usernotconfigured), Toast.LENGTH_SHORT)
-				.show();
-		return;
-	}
-	Log.d(DEBUG_TAG, "sendToServer(): user: " + Utils.getUsername(context) + " @ " + Utils.getDomain(context));
-
-	// http
-
-	AsyncHttpTransfer asyncHttp = new AsyncHttpTransfer();
-	asyncHttp.init(context);
-	asyncHttp.execute(Utils.getDomain(context), Utils.getFullUsername(context), Utils.getPassword(context));
-
-}
-
-private class AsyncHttpTransfer extends AsyncTask<String, Void, String> {
-	private DBAdapter db;
-	private Context context;
-
-	public void init(Context con) {
-		context = con;
-	}
-
-	@Override
-	protected String doInBackground(String... params) {
-
+	private void sendToServer(Context context) {
+		
+		/* Check if username configured */
+		if (Utils.getUsername(context) == null) {
+			Log.d(DEBUG_TAG,
+					"sendToServer(): username not set");
+			Toast.makeText(
+					context,
+					context.getResources().getString(
+							R.string.msg_usernotconfigured), Toast.LENGTH_SHORT)
+					.show();
+			return;
+		}
+		
+		/* Check the network connection */
+		ConnectivityManager connMgr = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		if (networkInfo == null || !networkInfo.isConnected()) {
+			Log.d(DEBUG_TAG, "sendToServer(): no internet connection");
+			// fail silently
+			//Toast.makeText(
+			//		context,
+			//		context.getResources().getString(R.string.msg_noconnection),
+			//		Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		Log.d(DEBUG_TAG, "sendToServer(): user: " + Utils.getUsername(context) + " @ " + Utils.getDomain(context));
+		
 		/* Do the database work */
 		DBAdapter db = new DBAdapter(context);
-
-		String deletionMarkerTmp = "";
-
 		db.dbhelper.open_r();
-		if (!db.db.isOpen()) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// continue
-			}
-			db.dbhelper.open_r();
-		}
-		Log.d(DEBUG_TAG, "looking for data to upload");
+		
+		String deletionMarker = "";
+	
+		/* Check if something is in database */
 		Cursor cursor = db.dbhelper.getLocalLocations();
-		Log.d(DEBUG_TAG, "got " + Integer.toString(cursor.getCount())
-				+ " results");
-		if (cursor != null && cursor.getCount() > 0)
-			cursor.moveToFirst();
-		else {
+		if (cursor == null || cursor.getCount() < 1) {
+			Log.d(DEBUG_TAG, "sendToServer(): nothing in database");
 			db.dbhelper.close();
-			return null;
+			return;
+	}
+		else {
+			Log.d(DEBUG_TAG, "sendToServer(): got " + Integer.toString(cursor.getCount()) + " results");
+			cursor.moveToFirst();
 		}
-
+	
+		/* Generate JSON */
 		JSONObject json = new JSONObject();
-
+	
 		try {
 			json.put("request", "setlocation");
-			json.put("sender", params[1]);
+			json.put("sender", Utils.getFullUsername(context));
 			try {
 				json.put("version", Integer.toString(context
 						.getPackageManager().getPackageInfo(
 								context.getPackageName(), 0).versionCode));
-			} catch (NameNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (NameNotFoundException e2) {
+				// continue
 			}
-		} catch (JSONException e2) {
+		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			e.printStackTrace();
 		}
-
+	
 		JSONArray data = new JSONArray();
-
+	
 		do {
 			
 			JSONObject row = new JSONObject();
-
+	
 			try {
 				
 				row.put(DBAdapter.LocationCacheContract.COLUMN_TIME,
@@ -204,147 +168,147 @@ private class AsyncHttpTransfer extends AsyncTask<String, Void, String> {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+	
 			data.put(row);
-			if (!(deletionMarkerTmp.length() == 0))
-				deletionMarkerTmp += ", ";
-			deletionMarkerTmp += Long.toString(cursor.getLong(0));
-
+			if (!(deletionMarker.length() == 0))
+				deletionMarker += ", ";
+			deletionMarker += Long.toString(cursor.getLong(0));
+	
 		} while (cursor.moveToNext());
-
+	
 		try {
 			json.put("data", data);
-		} catch (JSONException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-
-		byte[] data_compressed = null;
-		try {
-			data_compressed = Utils.gzdeflate(json.toString().getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-
-		/* Garbage collection */
-		data = null;
-		json = null;
-
-		/* http */
-		DefaultHttpClient httpclient = new DefaultHttpClient();
-
-		// httpclient.setReuseStrategy()
-
-		httpclient.getCredentialsProvider().setCredentials(
-				new AuthScope(params[0], 80),
-				new UsernamePasswordCredentials(params[1], params[2]));
-
-		HttpPost httppost = new HttpPost("http://" + params[0]
-				+ "/api.php");
-		
-		//httppost.setHeader("Content-Type", "multipart/form-data");
-		
-		//BasicHttpParams httpparams = new BasicHttpParams();
-		//httpparams.clear();
-		
-		//httpparams.setParameter("json", Base64.encodeToString(compressed, Base64.DEFAULT));	// Reference says HTTP POST can send "arbitrary" amounts of data
-		
-		//httppost.setParams(httpparams);
-		
-		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-		pairs.add(new BasicNameValuePair("json", Base64.encodeToString(
-				data_compressed, Base64.DEFAULT)));
-		
-		try {
-			httppost.setEntity(new UrlEncodedFormEntity(pairs));
-			// httppost.setEntity(new StringEntity(json.toString()));
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			db.dbhelper.close();
-			e1.printStackTrace();
-		}
-
-		HttpResponse response = null;
-
-		Log.d(DEBUG_TAG, "executing request " + httppost.getRequestLine());
-
-		String deletionMarker = "";
-
-		try {
-			response = httpclient.execute(httppost);
-			Log.d(DEBUG_TAG, "got response " + response.getStatusLine());
-			switch (response.getStatusLine().getStatusCode()) {
-			case 200:
-				deletionMarker = deletionMarkerTmp;
-				break;
-			case 400:
-				Toast.makeText(context, "HTTP 400", Toast.LENGTH_SHORT).show();	// Does not work. Use Handler
-				break;
-			case 401:
-				Toast.makeText(context, "HTTP 401", Toast.LENGTH_SHORT).show();	// Does not work. Use Handler
-				break;
-			case 403:
-				Toast.makeText(context, "HTTP 403", Toast.LENGTH_SHORT).show();	// Does not work. Use Handler
-				break;
-			case 404:
-				Toast.makeText(context, "HTTP 404", Toast.LENGTH_SHORT).show();	// Does not work. Use Handler
-				break;
-			case 500:
-				Toast.makeText(context, "HTTP 500", Toast.LENGTH_SHORT).show();	// Does not work. Use Handler
-				break;
-			default:
-				Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();	// Does not work. Use Handler
-				break;
-			}
-
-		} catch (ClientProtocolException e) {
-			Log.i("Exception (ClientProtocol)", " " + e.getMessage());
-			db.dbhelper.close();
-			return null;
-		} catch (IOException e) {
-			Log.i("Exception (IO)", " " + e.getMessage());
-			db.dbhelper.close();
-			return null;
-		} catch (Exception e) {
-			Log.i("Exception", " " + e.getMessage());
-			db.dbhelper.close();
-			return null;
-		}
-
-		try {
-			response.getEntity().consumeContent();
-		} catch (IOException e) {
+		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
+		db.dbhelper.close();
+		
+		/* send */
+		AsyncHttpTransfer asyncHttp = new AsyncHttpTransfer();
+		try {
+			asyncHttp.init(context, json.toString().getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		asyncHttp.execute(Utils.getDomain(context), Utils.getFullUsername(context), Utils.getPassword(context), deletionMarker);
+	
 		/* Garbage collection */
-		data_compressed = null;
-
-		db.dbhelper.close();
-
-		if (deletionMarker.length() == 0 || deletionMarker.equals("0"))
-			return null;
-
-		db.dbhelper.open_w();
-		Log.d(DEBUG_TAG, "marking as done: " + deletionMarker);
-		db.dbhelper.markDone(deletionMarker);
-		db.dbhelper.close();
-
-		// TODO: Refresh webview?
-
-		return deletionMarker;
+		data = null;
+		json = null;
+	
 	}
 
-	@Override
-	protected void onPostExecute(String result) {
-		// Log.d(DEBUG_TAG, "onPostExecute: Returned: " + result);
-
+	private class AsyncHttpTransfer extends AsyncTask<String, Void, String> {
+		private Context context;
+		private byte[] data = null;
+	
+		public void init(Context arg_context, byte[] arg_data) {
+			context = arg_context;
+			data = arg_data;
+		}
+	
+		@Override
+		protected String doInBackground(String... params) {
+	
+			byte[] data_compressed = Utils.gzdeflate(data);
+			data = null;
+	
+			/* http */
+			DefaultHttpClient httpclient = new DefaultHttpClient();
+	
+			// TODO: httpclient.setReuseStrategy()
+	
+			httpclient.getCredentialsProvider().setCredentials(
+					new AuthScope(params[0], 80),
+					new UsernamePasswordCredentials(params[1], params[2]));
+	
+			HttpPost httppost = new HttpPost("http://" + params[0]
+					+ "/api.php");
+			
+			//httppost.setHeader("Content-Type", "multipart/form-data");
+			
+			//BasicHttpParams httpparams = new BasicHttpParams();
+			//httpparams.clear();
+			
+			//httpparams.setParameter("json", Base64.encodeToString(compressed, Base64.DEFAULT));	// Reference says HTTP POST can send "arbitrary" amounts of data
+			
+			//httppost.setParams(httpparams);
+			
+			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+			pairs.add(new BasicNameValuePair("json", Base64.encodeToString(
+					data_compressed, Base64.DEFAULT)));
+			
+			try {
+				httppost.setEntity(new UrlEncodedFormEntity(pairs));
+				// httppost.setEntity(new StringEntity(json.toString()));
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	
+			HttpResponse response = null;
+			String deletionMarker = null;
+	
+			Log.d(DEBUG_TAG, "executing request " + httppost.getRequestLine());
+			try {
+				response = httpclient.execute(httppost);
+			} catch (ClientProtocolException e) {
+				Log.i("Exception (ClientProtocol)", " " + e.getMessage());
+				return "Error: Exception (ClientProtocol) " + e.getMessage();
+			} catch (IOException e) {
+				Log.i("Exception (IO)", " " + e.getMessage());
+				return "Error: Exception (IO) " + e.getMessage();
+			} catch (Exception e) {
+				Log.i("Exception", " " + e.getMessage());
+				return "Error: Exception " + e.getMessage();
+			}
+			
+			Log.d(DEBUG_TAG, "got response " + response.getStatusLine());
+			switch (response.getStatusLine().getStatusCode()) {
+			case 200:
+				deletionMarker = params[3];
+				break;
+			default:
+				deletionMarker = "Error: " + response.getStatusLine();
+				break;
+			}
+	
+			/* Garbage collection */
+			data_compressed = null;
+			
+			try {
+				response.getEntity().consumeContent();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
+			/* mark rows in SQLite as done */
+			if (deletionMarker != null && deletionMarker.length() > 0 && !deletionMarker.equals("0") && !deletionMarker.startsWith("Error")) {
+				DBAdapter db = new DBAdapter(context);
+				db.dbhelper.open_w();
+				Log.d(DEBUG_TAG, "marking as done: " + deletionMarker);
+				db.dbhelper.markDone(deletionMarker);
+				db.dbhelper.close();
+			}
+	
+			// TODO: Refresh webview?
+	
+			return deletionMarker;
+		}
+	
+		@Override
+		protected void onPostExecute(String result) {
+			// Log.d(DEBUG_TAG, "onPostExecute: Returned: " + result);
+			if (result != null)
+				Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+		}
+		
 	}
-}
-
-public UpdateReceiver() {
-}
-
+	
+	public UpdateReceiver() {
+	}
 }
