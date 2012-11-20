@@ -121,12 +121,11 @@ public class LocationReceiver extends BroadcastReceiver {
 								.getSystemService(Context.LOCATION_SERVICE);
 						// Toast.makeText(con, "removing LocationListener",
 						// Toast.LENGTH_SHORT).show();
-					try {
-                        	                Thread.sleep(4000);
-                                	}
-                                	} catch (InterruptedException e) {
-                                        	// continue
-                                	}
+						try {
+							Thread.sleep(4000);
+						} catch (InterruptedException e) {
+							// continue
+						}
 						locationManager.removeUpdates(this);
 					}
 
@@ -355,9 +354,9 @@ public class LocationReceiver extends BroadcastReceiver {
 				e2.printStackTrace();
 			}
 
-            /* Garbage collection */
-            data = null;
-            json = null;
+			/* Garbage collection */
+			data = null;
+			json = null;
 
 			/* http */
 			DefaultHttpClient httpclient = new DefaultHttpClient();
