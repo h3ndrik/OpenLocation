@@ -42,18 +42,6 @@ public class UpdateReceiver extends BroadcastReceiver {
 		
 		if (intent.hasExtra("de.h3ndrik.openlocation.update")) {
 			Log.d(DEBUG_TAG, "Update requested (from Alarm)");
-		
-			// This update came from a recurring alarm
-			// We defined an inexact Alarm to send data only if phone is active
-			// anyway
-			// hence, save battery. So do network stuff immediately.
-			sendToServer(context);
-
-			// Finally Activate GPS if last location in sqlite is older than
-			// 15min
-			// This is kind of suboptimal at this time, because database is
-			// already synced with server
-			// But doing things in this order may save a little battery
 			
 			DBAdapter db = new DBAdapter(context);
 			db.dbhelper.open_r();
@@ -61,12 +49,15 @@ public class UpdateReceiver extends BroadcastReceiver {
 			// Long.toString((System.currentTimeMillis() -
 			// db.dbhelper.lastUpdateMillis()) / 1000) + "s ago",
 			// Toast.LENGTH_SHORT).show();
-
 			if (db.dbhelper.lastUpdateMillis() < System.currentTimeMillis() - 15 * 60 * 1000) {
 				LocationReceiver.doActiveUpdate(context, true);
 			}
-
 			db.dbhelper.close();
+			
+			sendToServer(context);
+			// TODO: Maybe move sendToServer() before database work to conserve battery
+			// as we got called by an inexact alarm which (hopefully) triggers when data connection
+			// is active anyway. hence we should use the connection asap. Ref says radio stays alive for 6/20 sec after each request! 
 		}
 		else {
 			Log.d(DEBUG_TAG, "Not sure who sent this Broadcast");
