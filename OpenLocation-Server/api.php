@@ -1,8 +1,8 @@
 <?php
-
-/*//DEBUG
-error_reporting(E_ALL);
-ini_set("display_errors", 1);*/
+if (isset($DEBUG) && strcmp($DEBUG, "yesdoit") == 0) {
+  error_reporting(E_ALL);
+  ini_set("display_errors", 1);
+}
 
 require_once('functions.php');
 
@@ -12,7 +12,10 @@ if (empty($_POST["json"])) die400 ('Wrong Argument(s)');
 
 /* Decode JSON */
 $json = json_decode(gzinflate(base64_decode($_POST["json"]))) or die500('Bad JSON');
-if ($json == NULL || empty($json)) die500('Bad JSON');
+if ($json == NULL || empty($json)) {
+  writetolog("Error: Bad JSON: " . gzinflate(base64_decode($_POST["json"])));
+  die500('Bad JSON');
+}
 $request = $json->{'request'};
 
 
@@ -34,7 +37,7 @@ if (strcmp($request, 'setlocation') == 0) {
   foreach ($data as $row) {
     if (empty($row->{'time'}) || empty($row->{'latitude'}) || empty($row->{'longitude'})) die ('Wrong Argument(s) inside JSON');
     $query = "INSERT INTO `" . mysql_real_escape_string($user) . "` VALUES('" . $row->{'time'} . "', '" . $row->{'latitude'} . "', '" . $row->{'longitude'} . "', '" . $row->{'altitude'} . "', '" . $row->{'accuracy'} . "', '" . $row->{'speed'} . "', '" . $row->{'bearing'} . "', '" . $row->{'provider'} . "', '" . $_SERVER['REMOTE_ADDR'] . "');";
-    $result = mysql_query($query) or die500("MySQL Error (INSERT): " . mysql_error());
+    $result = mysql_query($query) or writetolog("MySQL Error (INSERT): " . mysql_error());
   }
   echo 'Position updated.';
 
@@ -68,6 +71,7 @@ elseif (strcmp($request, 'getlocationdata') == 0) {
   if (mysql_num_rows($result) != 1) {
     mysql_free_result($result);
     mysql_close();
+    writetolog("Error (getlocationdata): Not Authorized: " . mysql_real_escape_string($user));
     die403('{"request":"locationdata", "error":"Not Authorized"}');
   }
   mysql_free_result($result);

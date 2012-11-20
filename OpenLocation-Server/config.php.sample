@@ -17,4 +17,8 @@ define('DB_CHARSET', 'utf8');
 /** The Database Collate type. Don't change this if in doubt. */
 define('DB_COLLATE', '');
 
+/** write log output. WARNING this is a mayor security leak. DO NOT SET */
+define('DEBUG', '');
+define('DEBUGFILE', 'log.insertsomethingsecrethere.txt');
+
 ?>

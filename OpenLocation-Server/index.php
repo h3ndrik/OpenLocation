@@ -1,8 +1,8 @@
 <?php
-
-/*//DEBUG
-error_reporting(E_ALL);
-ini_set("display_errors", 1);*/
+if (isset($DEBUG) && strcmp($DEBUG, "yesdoit") == 0) {
+  error_reporting(E_ALL);
+  ini_set("display_errors", 1);
+}
 
 require_once('functions.php');
 

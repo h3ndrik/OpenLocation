@@ -1,4 +1,15 @@
 <?php
+function writetolog($error) {
+  if (isset($DEBUG) && isset($DEBUGFILE) && strcmp($DEBUG, "yesdoit") == 0) {
+    $myFile = $DEBUGFILE;
+    $fh = fopen($myFile, 'a') or die500("FAILED");
+    $timestamp = time();
+    $stringData = "TIME: $timestamp, LOG: $error\n";
+    fwrite($fh, $stringData);
+    fclose($fh);
+  }
+}
+
 function validEmail($email)
 {
    $isValid = true;
@@ -83,42 +94,8 @@ function http_digest_parse($txt) {
     return $noetige_teile ? false : $daten;
 }
 
-function send400Header() {
-    header('HTTP/1.1 400 Bad Request');
-}
-
-function die400($error) {
-    header('HTTP/1.1 400 Bad Request');
-    die($error);
-}
-
-function send401Header($realm) {
-    header('HTTP/1.1 401 Unauthorized');
-    header('WWW-Authenticate: Digest realm="' . $realm .
-           '",qop="auth",nonce="' . uniqid() . '",opaque="' . md5($realm) .
-           '"');
-}
-
-function send403Header() {
-    header('HTTP/1.1 403 Forbidden');
-}
-
-function die403($error) {
-    header('HTTP/1.1 403 Forbidden');
-    die($error);
-}
-
-function send500Header() {
-    header('HTTP/1.1 500 Internal Server Error');
-}
-
-function die500($error) {
-    header('HTTP/1.1 500 Internal Server Error');
-    die($error);
-}
-
 function validateUser() {
-  (require_once('config.php')) or die("Please edit config.php.sample and save as config.php");
+  (require_once('config.php')) or die("Please edit config.php.sample and save as config.php");  // Die Klammern sind schon richtig so
 
 $realm = 'OpenLocation';
 
@@ -161,6 +138,7 @@ if (strrpos($daten["username"], "@") && strcmp($domain , $_SERVER['HTTP_HOST']) 
   send403Header();
   echo '<span style="color:#FF0000">Wrong Host! Expected: ...@' . $_SERVER['HTTP_HOST'] . '</span><br />Please register at <a href="http://' . $domain . '">http://' . $domain . '</a>.<hr />';
   echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  writetolog("Error: username contains different host");
   die("Aborting");
 }
 
@@ -168,12 +146,12 @@ if (strlen($local) < 1) {
   send401Header($realm);
   echo '<p><a href="register.php">Register new user</a>' . "</p>\n";
   echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  writetolog("Username wrong format");
   die ("Username wrong format.");
 }
-mysql_connect(DB_HOST, DB_USER, DB_PASSWORD) or die("Unable to connect to MySQL");
-mysql_select_db(DB_NAME) or die("Unable to select database");
+connectToMySQL();
 $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($local) . "';";
-$result = mysql_query($query) or die("MySQL Error (SELECT *): " . mysql_error());
+$result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
 
 if (mysql_num_rows($result) == 1) {
   $row = mysql_fetch_object($result);
@@ -185,6 +163,7 @@ else {
   mysql_free_result($result);
   send401Header($realm);
   echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  writetolog("Error: User \"" . $local . "\" not found.");
   die('User &quot;' . $local . '&quot; not found.');
 }
 //    !isset($benutzer[$daten['username']]))
@@ -200,6 +179,7 @@ $gueltige_antwort = md5($A1 . ':' . $daten['nonce'] . ':' . $daten['nc'] .
 if ($daten['response'] != $gueltige_antwort)  {
   send401Header($realm);
   echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  writetolog("Error: Falsche Zugangsdaten");
   die('Falsche Zugangsdaten!');
 }
 
@@ -222,9 +202,9 @@ function makeHtmlFooter() {
 }
 
 function connectToMySQL() {
-  (require_once('config.php')) or die("Please edit config.php.sample and save as config.php");
-  mysql_connect(DB_HOST, DB_USER, DB_PASSWORD) or die("Unable to connect to MySQL");
-  mysql_select_db(DB_NAME) or die("Unable to select database");
+  (require_once('config.php')) or die500("Please edit config.php.sample and save as config.php");
+  mysql_connect(DB_HOST, DB_USER, DB_PASSWORD) or die500("Unable to connect to MySQL");
+  mysql_select_db(DB_NAME) or die500("Unable to select database");
 }
 
 function elapsed_time($timestamp, $precision = 2) {
@@ -240,6 +220,40 @@ function elapsed_time($timestamp, $precision = 2) {
       @$result .= $$k;
     }
   return $result ? $result.'ago' : '1 sec to go';
+}
+
+function send400Header() {
+    header('HTTP/1.1 400 Bad Request');
+}
+
+function die400($error) {
+    header('HTTP/1.1 400 Bad Request');
+    die($error);
+}
+
+function send401Header($realm) {
+    header('HTTP/1.1 401 Unauthorized');
+    header('WWW-Authenticate: Digest realm="' . $realm .
+           '",qop="auth",nonce="' . uniqid() . '",opaque="' . md5($realm) .
+           '"');
+}
+
+function send403Header() {
+    header('HTTP/1.1 403 Forbidden');
+}
+
+function die403($error) {
+    header('HTTP/1.1 403 Forbidden');
+    die($error);
+}
+
+function send500Header() {
+    header('HTTP/1.1 500 Internal Server Error');
+}
+
+function die500($error) {
+    header('HTTP/1.1 500 Internal Server Error');
+    die($error);
 }
 
 ?>
