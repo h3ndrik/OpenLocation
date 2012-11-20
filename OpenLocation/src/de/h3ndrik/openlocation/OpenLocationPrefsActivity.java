@@ -1,17 +1,10 @@
 package de.h3ndrik.openlocation;
 
 import de.h3ndrik.openlocation.util.Utils;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.preference.PreferenceActivity;
-import android.widget.Toast;
 
 public class OpenLocationPrefsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
@@ -48,17 +41,19 @@ public class OpenLocationPrefsActivity extends PreferenceActivity implements
 
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		// Let's do something a preference value changes
-		// Toast.makeText(getBaseContext(),
-		// "Preference changed: "+key.toString(), Toast.LENGTH_SHORT).show();
+		// Let's do something if a preference value changes
+
 		if (key.equals("activate")) {
-
 			Utils.startReceiver(getBaseContext(), true);
-
 		} else if (key.equals("username")) {
 			getPreferenceScreen().findPreference("username").setSummary(
 					sharedPreferences.getString("username", getResources()
 							.getString(R.string.pref_username_summary)));
+		}
+		
+		/* Clear webview cache if user changes */
+		if (key.equals("username") || key.equals("password")) {
+			OpenLocationMainActivity.clearWebviewCache(getBaseContext());
 		}
 	}
 

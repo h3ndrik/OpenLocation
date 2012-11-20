@@ -27,7 +27,7 @@ public class OpenLocationMainActivity extends Activity {
 	LocationManager locationManager;
 	AlarmManager alarmManager;
 	PendingIntent pendingIntent;
-	WebView webview;
+	private static WebView webview;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class OpenLocationMainActivity extends Activity {
 				// "OpenLocation", username, password);
 				Log.d("WebView", "found Username/Password");
 
-				if (!handler.useHttpAuthUsernamePassword()) {	// if we can use user credentials on record (ie, if we did not fail trying to use them last time)
+				if (!handler.useHttpAuthUsernamePassword()) {	// can't use user credentials on record (ie, we did fail trying to use them last time)
 					Toast.makeText(activity, getResources().getString(R.string.msg_wrongcredentials), Toast.LENGTH_SHORT).show();
 					handler.cancel();
 					return;
@@ -158,6 +158,15 @@ public class OpenLocationMainActivity extends Activity {
 		}
 		return false;
 	}
+	
+	public static void clearWebviewCache(Context context) {
+		if (webview != null) {
+			// TODO: This does not work
+			webview.clearCache(true);
+			//webview.reload();
+		}
+	}
+	
 
 	/*
 	 * (non-Javadoc)
