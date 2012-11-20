@@ -45,11 +45,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class LocationReceiver extends BroadcastReceiver {
-	private static final String DEBUG_TAG = "LocationReceiver"; // for logging
-																// purposes
+	private static final String DEBUG_TAG = "LocationReceiver"; // for logging purposes
 
-	static LocationListener locationListener;
-
+	private static LocationListener locationListener = null;
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 
@@ -59,10 +58,12 @@ public class LocationReceiver extends BroadcastReceiver {
 			Location location = (Location) intent.getExtras().get(
 					LocationManager.KEY_LOCATION_CHANGED);
 			Log.d(DEBUG_TAG, "location update by " + location.getProvider());
+			
 			// Toast.makeText(context, "Location changed : Lat: " +
 			// location.getLatitude() + " Long: " + location.getLongitude(),
 			// Toast.LENGTH_SHORT).show();
-			// in sqlite schreiben
+			
+			// write to SQLite
 			DBAdapter db = new DBAdapter(context);
 			db.dbhelper.open_w();
 			db.dbhelper.insertLocation(location.getTime(),
@@ -71,30 +72,121 @@ public class LocationReceiver extends BroadcastReceiver {
 					location.getSpeed(), location.getBearing(),
 					location.getProvider());
 			db.dbhelper.close();
-		} else if (intent.hasExtra("de.h3ndrik.openlocation.cancelgps")) {
-			Log.d(DEBUG_TAG, "Alarm: cancel GPS");
+		} 
 
-			if (locationListener != null) {
-				// Toast.makeText(context, "canceling GPS",
-				// Toast.LENGTH_SHORT).show();
-				LocationManager locationManager = (LocationManager) context
-						.getSystemService(Context.LOCATION_SERVICE);
-				// Toast.makeText(context, "removing LocationListener",
-				// Toast.LENGTH_SHORT).show();
-				locationManager.removeUpdates(locationListener);
-				//give LocationManager time to settle
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// continue
+		if (intent.hasExtra("de.h3ndrik.openlocation.cancelgps")) {
+			Log.d(DEBUG_TAG, "cancel GPS");
+
+			cancelUpdates(context);
+		}
+	}
+	
+	public static void doActiveUpdate(final Context context) {
+		Log.d(DEBUG_TAG, "force active location update");
+		
+		if (locationListener == null) {
+			Log.d(DEBUG_TAG, "set up new LocationListener");
+			
+			locationListener = new LocationListener() {
+				public void onLocationChanged(Location location) {
+					Log.d(DEBUG_TAG, "locationListener: location changed. disabling");
+					LocationManager locationManager = (LocationManager) context
+							.getSystemService(Context.LOCATION_SERVICE);
+					// give location provider time to settle
+					try {
+						Thread.sleep(4000);
+					} catch (InterruptedException e) {
+						// continue
+					}
+					locationManager.removeUpdates(this);
+					locationListener = null;
 				}
+
+				public void onProviderDisabled(String provider) {
+					// TODO Auto-generated method stub
+
+				}
+
+				public void onProviderEnabled(String provider) {
+					// TODO Auto-generated method stub
+
+				}
+
+				public void onStatusChanged(String provider, int status,
+						Bundle extras) {
+					// TODO Auto-generated method stub
+
+				}
+			};
+			
+			LocationManager locationManager = (LocationManager) context
+					.getSystemService(Context.LOCATION_SERVICE);
+
+			SharedPreferences SP = PreferenceManager
+					.getDefaultSharedPreferences(context);
+			if (SP.getBoolean("activeupdate", false)) {
+
+				if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+					Toast.makeText(
+							context,
+							context.getResources().getString(
+									R.string.msg_gpsdisabled),
+							Toast.LENGTH_SHORT).show();
+					locationManager.requestLocationUpdates(
+							LocationManager.NETWORK_PROVIDER, 0, 0,
+							locationListener);
+				} else {
+					// GPS enabled
+					locationManager.requestLocationUpdates(
+							LocationManager.GPS_PROVIDER, 0, 0,
+							locationListener); // workaround,
+												// requestSingleUpdate: only
+												// API Versions >= 9
+				}
+
+
+			} else {
+				// get update without gps
 				locationManager.requestLocationUpdates(
 						LocationManager.NETWORK_PROVIDER, 0, 0,
-						locationListener);	// Request network location instead
+						locationListener);
 			}
+			
+			//cancel updates after timeout with no fix
+			AlarmManager alarmManager = (AlarmManager) context
+					.getSystemService(Context.ALARM_SERVICE);
+			Intent i = new Intent(context, LocationReceiver.class);
+			i.putExtra("de.h3ndrik.openlocation.cancelgps", "true");
+			PendingIntent pendingIntent = PendingIntent
+					.getBroadcast(context, 0, i,
+							PendingIntent.FLAG_UPDATE_CURRENT);
+			alarmManager.set(AlarmManager.RTC_WAKEUP,
+					System.currentTimeMillis() + 20000,
+					pendingIntent);
+			Log.d(DEBUG_TAG, "cancelUpdates alarm set");
+		}
+		else {
+			Log.d(DEBUG_TAG, "conflicting locationListener, skipping");
 		}
 	}
 
+	public static void cancelUpdates(final Context context) {
+		if (locationListener != null) {
+			Log.d(DEBUG_TAG, "removing locationListener");
+
+			LocationManager locationManager = (LocationManager) context
+					.getSystemService(Context.LOCATION_SERVICE);
+			locationManager.removeUpdates(locationListener);
+			
+			locationListener = null;
+			
+			//TODO: Request network location if GPS failed
+		}
+		else {
+			Log.d(DEBUG_TAG, "no locationListener present");
+		}
+		
+	}
 
 
 	public LocationReceiver() {

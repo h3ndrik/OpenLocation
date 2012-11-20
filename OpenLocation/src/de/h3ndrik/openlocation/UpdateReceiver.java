@@ -42,125 +42,41 @@ import android.widget.Toast;
 public class UpdateReceiver extends BroadcastReceiver {
 	private static final String DEBUG_TAG = "UpdateReceiver"; // for logging purposes
 	
-	static LocationListener locationListener;
-
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		// TODO: This method is called when the BroadcastReceiver is receiving
-		// an Intent broadcast.
 		
 		Log.d(DEBUG_TAG, "got a Broadcast");
 		
-			DBAdapter db = new DBAdapter(context);
-
 			// This update came (TODO: most probably?) from a recurring alarm
 			// We defined an inexact Alarm to send data only if phone is active
 			// anyway
 			// hence, save battery. So do network stuff immediately.
-			sendToServer(context, db);
+			sendToServer(context);
 
 			// Finally Activate GPS if last location in sqlite is older than
 			// 15min
 			// This is kind of suboptimal at this time, because database is
 			// already synced with server
 			// But doing things in this order may save a little battery
+			
+			DBAdapter db = new DBAdapter(context);
 			db.dbhelper.open_r();
 			// Toast.makeText(context, "Last update " +
 			// Long.toString((System.currentTimeMillis() -
 			// db.dbhelper.lastUpdateMillis()) / 1000) + "s ago",
 			// Toast.LENGTH_SHORT).show();
 
-			final Context con = context;
-			if (locationListener == null) {
-
-				locationListener = new LocationListener() {
-					public void onLocationChanged(Location location) {
-						LocationManager locationManager = (LocationManager) con
-								.getSystemService(Context.LOCATION_SERVICE);
-						// Toast.makeText(con, "removing LocationListener",
-						// Toast.LENGTH_SHORT).show();
-						try {
-							Thread.sleep(4000);
-						} catch (InterruptedException e) {
-							// continue
-						}
-						locationManager.removeUpdates(this);
-					}
-
-					public void onProviderDisabled(String provider) {
-						// TODO Auto-generated method stub
-
-					}
-
-					public void onProviderEnabled(String provider) {
-						// TODO Auto-generated method stub
-
-					}
-
-					public void onStatusChanged(String provider, int status,
-							Bundle extras) {
-						// TODO Auto-generated method stub
-
-					}
-				};
-			}
-
 			if (db.dbhelper.lastUpdateMillis() < System.currentTimeMillis() - 15 * 60 * 1000) {
-
-				LocationManager locationManager = (LocationManager) context
-						.getSystemService(Context.LOCATION_SERVICE);
-
-				SharedPreferences SP = PreferenceManager
-						.getDefaultSharedPreferences(context);
-				if (SP.getBoolean("activeupdate", false)) {
-
-					if (!locationManager
-							.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-						Toast.makeText(
-								context,
-								context.getResources().getString(
-										R.string.msg_gpsdisabled),
-								Toast.LENGTH_SHORT).show();
-						locationManager.requestLocationUpdates(
-								LocationManager.NETWORK_PROVIDER, 0, 0,
-								locationListener);
-					} else {
-						// Toast.makeText(context, "getting GPS fix",
-						// Toast.LENGTH_SHORT).show();
-						locationManager.requestLocationUpdates(
-								LocationManager.GPS_PROVIDER, 0, 0,
-								locationListener); // workaround,
-													// requestSingleUpdate: only
-													// API Versions >= 9
-					}
-
-
-				} else {
-					// get update without gps
-					locationManager.requestLocationUpdates(
-							LocationManager.NETWORK_PROVIDER, 0, 0,
-							locationListener);
-				}
-				
-				AlarmManager alarmManager = (AlarmManager) context
-						.getSystemService(Context.ALARM_SERVICE);
-				Intent i = new Intent(context, LocationReceiver.class);
-				i.putExtra("de.h3ndrik.openlocation.cancelgps", "true");
-				PendingIntent pendingIntent = PendingIntent
-						.getBroadcast(context, 0, i,
-								PendingIntent.FLAG_UPDATE_CURRENT);
-				alarmManager.set(AlarmManager.RTC_WAKEUP,
-						System.currentTimeMillis() + 20000,
-						pendingIntent);
-				Log.d(DEBUG_TAG, "Alarm .cancelgps set");
-
+				LocationReceiver.doActiveUpdate(context);
 			}
 
 			db.dbhelper.close();
 
 	}
 
-private void sendToServer(Context context, DBAdapter db) {
+private void sendToServer(Context context) {
+	
+	DBAdapter db = new DBAdapter(context);
 
 	// Check if something is in database
 	db.dbhelper.open_r();
