@@ -1,27 +1,5 @@
 package de.h3ndrik.openlocation;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import de.h3ndrik.openlocation.util.Utils;
 
 import android.app.AlarmManager;
@@ -30,17 +8,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -72,7 +44,7 @@ public class LocationReceiver extends BroadcastReceiver {
 					location.getSpeed(), location.getBearing(),
 					location.getProvider());
 			db.dbhelper.close();
-		} 
+		}
 
 		if (intent.hasExtra("de.h3ndrik.openlocation.cancelgps")) {
 			Log.d(DEBUG_TAG, "cancel GPS");
@@ -89,7 +61,7 @@ public class LocationReceiver extends BroadcastReceiver {
 			
 			locationListener = new LocationListener() {
 				public void onLocationChanged(Location location) {
-					Log.d(DEBUG_TAG, "locationListener: location changed. disabling");
+					Log.d(DEBUG_TAG, "locationListener: location changed. disabling myself");
 					LocationManager locationManager = (LocationManager) context
 							.getSystemService(Context.LOCATION_SERVICE);
 					// give location provider time to settle
@@ -125,8 +97,10 @@ public class LocationReceiver extends BroadcastReceiver {
 			SharedPreferences SP = PreferenceManager
 					.getDefaultSharedPreferences(context);
 			if (SP.getBoolean("activeupdate", false)) {
+				// We want active lookup
 
 				if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+					Log.d(DEBUG_TAG, "GPS disabled, requesting network location update");
 					Toast.makeText(
 							context,
 							context.getResources().getString(
@@ -136,7 +110,8 @@ public class LocationReceiver extends BroadcastReceiver {
 							LocationManager.NETWORK_PROVIDER, 0, 0,
 							locationListener);
 				} else {
-					// GPS enabled
+					Log.d(DEBUG_TAG, "requesting GPS location update");
+
 					locationManager.requestLocationUpdates(
 							LocationManager.GPS_PROVIDER, 0, 0,
 							locationListener); // workaround,
@@ -146,7 +121,9 @@ public class LocationReceiver extends BroadcastReceiver {
 
 
 			} else {
-				// get update without gps
+				// TODO: or do nothing active here? 
+				Log.d(DEBUG_TAG, "Active lookup disabled, requesting network location update");
+
 				locationManager.requestLocationUpdates(
 						LocationManager.NETWORK_PROVIDER, 0, 0,
 						locationListener);
@@ -161,7 +138,7 @@ public class LocationReceiver extends BroadcastReceiver {
 					.getBroadcast(context, 0, i,
 							PendingIntent.FLAG_UPDATE_CURRENT);
 			alarmManager.set(AlarmManager.RTC_WAKEUP,
-					System.currentTimeMillis() + 20000,
+					System.currentTimeMillis() + 16000,
 					pendingIntent);
 			Log.d(DEBUG_TAG, "cancelUpdates alarm set");
 		}
