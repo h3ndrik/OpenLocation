@@ -42,12 +42,13 @@ Server:
 - Copy files to Webspace
 - Copy config.php.sample to config.php and edit
 
-Attribution
+License
 --------------------------------------
-Rendering of the map is done server-side by Leaflet (leafletjs.com), Map data (CC-BY-SA) OpenStreetMap contributors (openstreetmap.org), Imagery (c) CloudMade (cloudmade.com).
+Third party licenses:
+- Rendering of the map is done server-side by Leaflet (leafletjs.com)
+- Map data (CC-BY-SA) OpenStreetMap contributors (openstreetmap.org)
+- Imagery (c) CloudMade (cloudmade.com).
 
-Copyright
---------------------------------------
 Copyright (c) 2012 Hendrik Langer <dev@h3ndrik.de>
 
 This program is free software: you can redistribute it and/or modify
