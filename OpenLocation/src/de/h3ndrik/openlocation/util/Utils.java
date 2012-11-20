@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import de.h3ndrik.openlocation.LocationReceiver;
+import de.h3ndrik.openlocation.UpdateReceiver;
 
 /**
  * @author h3ndrik
@@ -26,8 +27,11 @@ public class Utils { // TODO: Rename class?
 		SharedPreferences SP = PreferenceManager
 				.getDefaultSharedPreferences(context);
 
-		Intent i = new Intent(context, LocationReceiver.class);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, i,
+		Intent locationIntent = new Intent(context, LocationReceiver.class);
+		Intent updateIntent = new Intent(context, UpdateReceiver.class);
+		PendingIntent pendingLocationIntent = PendingIntent.getBroadcast(context, 0, locationIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		LocationManager locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
@@ -36,33 +40,36 @@ public class Utils { // TODO: Rename class?
 
 		if (SP.getBoolean("activate", false)) {
 			locationManager.requestLocationUpdates(
-					LocationManager.PASSIVE_PROVIDER, 0, 0, pendingIntent);
+					LocationManager.PASSIVE_PROVIDER, 0, 0, pendingLocationIntent);
 			alarmManager.setInexactRepeating(
 					AlarmManager.ELAPSED_REALTIME_WAKEUP,
 					SystemClock.elapsedRealtime() + 300000l,
-					AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+					AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingUpdateIntent);
 			// alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 			// SystemClock.elapsedRealtime() + 15000l, 15000l, pendingIntent);
 			if (sendNow)
-				context.sendBroadcast(i);
+				context.sendBroadcast(updateIntent);
 		} else {
-			locationManager.removeUpdates(pendingIntent);
-			alarmManager.cancel(pendingIntent);
+			locationManager.removeUpdates(pendingLocationIntent);
+			alarmManager.cancel(pendingUpdateIntent);
 		}
 	}
 
 	public static void stopReceiver(Context context) {
 
-		Intent i = new Intent(context, LocationReceiver.class);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, i,
+		Intent locationIntent = new Intent(context, LocationReceiver.class);
+		Intent updateIntent = new Intent(context, UpdateReceiver.class);
+		PendingIntent pendingLocationIntent = PendingIntent.getBroadcast(context, 0, locationIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		LocationManager locationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
 		AlarmManager alarmManager = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 
-		locationManager.removeUpdates(pendingIntent);
-		alarmManager.cancel(pendingIntent);
+		locationManager.removeUpdates(pendingLocationIntent);
+		alarmManager.cancel(pendingUpdateIntent);
 	}
 	
 	public static byte[] gzdeflate(final byte[] uncompressed) {
