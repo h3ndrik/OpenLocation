@@ -305,7 +305,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 		@Override
 		protected void onPostExecute(String result) {
 			// Log.d(DEBUG_TAG, "onPostExecute: Returned: " + result);
-			if (result != null)
+			if (result != null && result.startsWith("Error"))
 				Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
 		}
 		

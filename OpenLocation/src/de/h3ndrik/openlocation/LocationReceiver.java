@@ -70,7 +70,7 @@ public class LocationReceiver extends BroadcastReceiver {
 					} catch (InterruptedException e) {
 						// continue
 					}
-					locationManager.removeUpdates(this);
+					locationManager.removeUpdates(locationListener);
 					locationListener = null;
 				}
 
