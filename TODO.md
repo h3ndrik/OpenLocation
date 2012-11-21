@@ -30,6 +30,14 @@ v0.5 (Beta)
 - Bugfix
 - Release
 
+v0.6 (Beta)
+-----------
+- clone Latitude
+
+v0.7 (Beta)
+-----------
+- clone Latitude
+
 later
 -----
 - see [android-sdk/samples/SampleSyncAdapter]
