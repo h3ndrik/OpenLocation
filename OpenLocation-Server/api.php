@@ -13,8 +13,8 @@ if (empty($_POST["json"])) die400 ('Wrong Argument(s)');
 /* Decode JSON */
 $json = json_decode(gzinflate(base64_decode($_POST["json"]))) or die500('Bad JSON');
 if ($json == NULL || empty($json)) {
-  writetolog("Error: Bad JSON: " . gzinflate(base64_decode($_POST["json"])));
-  die500('Bad JSON');
+  writetolog("Error: API: got Bad JSON: " . gzinflate(base64_decode($_POST["json"])));
+  die500('API: got Bad JSON');
 }
 $request = $json->{'request'};
 
@@ -22,101 +22,23 @@ $request = $json->{'request'};
 /* Handle request "setlocation" */
 if (strcmp($request, 'setlocation') == 0) {
 
-  /* HttpAuth */
-  list ($user, $domain) = validateUser();
+  require("api/setlocation.php");
 
-  /* Get data and sanitize */
-  $sender = $json->{'sender'}; // Currently not used
-  $data = $json->{'data'};
-  //$data[] = $json->{'data'};
-
-  if (empty($data)) die500('Missing arguments');
-
-  connectToMySQL();
-
-  foreach ($data as $row) {
-    if (empty($row->{'time'}) || empty($row->{'latitude'}) || empty($row->{'longitude'})) die ('Wrong Argument(s) inside JSON');
-    $query = "INSERT INTO `" . mysql_real_escape_string($user) . "` VALUES('" . $row->{'time'} . "', '" . $row->{'latitude'} . "', '" . $row->{'longitude'} . "', '" . $row->{'altitude'} . "', '" . $row->{'accuracy'} . "', '" . $row->{'speed'} . "', '" . $row->{'bearing'} . "', '" . $row->{'provider'} . "', '" . $_SERVER['REMOTE_ADDR'] . "');";
-    $result = mysql_query($query) or writetolog("MySQL Error (INSERT): " . mysql_error());
-  }
-  echo 'Position updated.';
-
-  mysql_close();
 }
 
 
-/* Handle request "getlocationdata" */
-elseif (strcmp($request, 'getlocationdata') == 0) {
+/* Handle request "getlocation" */
+elseif (strcmp($request, 'getlocation') == 0) {
 
-  /* HttpAuth */
-  // No HttpAuth necessary
+  require("api/getlocation.php");
 
-  /* Get data and sanitize */
-  $sender = $json->{'sender'};
-  $user = $json->{'user'};
-  $auth = $json->{'auth'};
-  if (!empty($json->{'starttime'})) $starttime = $json->{'starttime'};
-  else $starttime = 0;
-  if (!empty($json->{'endtime'})) $endtime = $json->{'endtime'};
-  else $endtime = time()*1000;
-
-  if (empty($sender) || empty($user) || empty($auth)) die500('Missing arguments');
+}
 
 
-  connectToMySQL();
+/* Handle request "getfriends" */
+elseif (strcmp($request, 'getfriends') == 0) {
 
-  /* Check if authorized */
-  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND authorized LIKE '%" . mysql_real_escape_string($sender) . ":" . mysql_real_escape_string($auth) . "%';";
-  $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
-  if (mysql_num_rows($result) != 1) {
-    mysql_free_result($result);
-    mysql_close();
-    writetolog("Error (getlocationdata): Not Authorized: " . mysql_real_escape_string($user));
-    die403('{"request":"locationdata", "error":"Not Authorized"}');
-  }
-  mysql_free_result($result);
-
-  /* Get locations from MySQL */
-  $query = "SELECT * FROM `" . mysql_real_escape_string($user) . "` WHERE time > " . mysql_real_escape_string($starttime) . " AND time < " . mysql_real_escape_string($endtime) . " ORDER BY time ASC;";
-  $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
-  if (mysql_num_rows($result) != false && mysql_num_rows($result) > 0) {
-    //      class LocationDatagram {
-    //        public $time;
-    //        public $latitude;
-    //        public $longitude;
-    //        public $altitude;
-    //        public $accuracy;
-    //        public $speed;
-    //        public $bearing;
-    //        public $provider;
-    //      }
-    //      $locationDatagram = new LocationDatagram();
-    $data = array();
-
-    for ($i=0; $i<mysql_num_rows($result); $i++) {
-      $data[$i] = mysql_fetch_object($result);
-    }
-
-  }
-  else {  // Nothing found
-    $data = null;
-  }
-  mysql_free_result($result);
-
-  mysql_close();
-
-  /* Send response */
-  class Response {
-    public $request = "locationdata";
-    public $error = 0;
-    public $data;
-  }
-
-  $response = new Response();
-  $response->data = $data;
-
-  echo json_encode($response);
-
+  require("api/getfriends.php");
 
 }
 
@@ -124,138 +46,24 @@ elseif (strcmp($request, 'getlocationdata') == 0) {
 /* Handle request "requestfriend" */
 elseif (strcmp($request, 'requestfriend') == 0) {
 
-  /* HttpAuth */
-  list ($sender, $domain) = validateUser();
+  require("api/requestfriend.php");
 
-  /* Get data and sanitize */
-  //$sender = $json->{'sender'};
-  $target = $json->{'target'};
-  $auth = newtoken();
-
-  if (empty($sender) || empty($target) || empty($auth)) die500('Missing arguments');
-
-  connectToMySQL();
-
-  /* Remove old tokens */
-  // TODO: If executed, this breaks current auth!
-  $query = "SELECT authorized FROM users WHERE username = '" . mysql_real_escape_string($target) . "' AND authorized LIKE '%" . mysql_real_escape_string($sender) . "%';";
-  $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
-  if (mysql_num_rows($result) == 1) {
-    $sendersandtokens = explode(",", mysql_fetch_object($result), -1);
-    foreach ($sendersandtokens as $singlesenderandtoken) {
-      if (strpos($singlesenderandtoken, $sender) === 0) {
-        // Update user
-        $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($target) . "' SET authorized = REPLACE(authorized, '" . $singlesenderandtoken . "', '');";
-        $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
-        // Update sender
-        $singleuserandtoken = str_replace($sender, $target, $singlesenderandtoken);
-        $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($sender) . "' SET friends = REPLACE(friends, '" . $singleuserandtoken . "', '');";
-        $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
-        writetolog("Invalidate user:token (got new one): " . $singleuserandtoken);
-      }
-    }
-  }
-  mysql_free_result($result);
-
-  /* Write user-auth to user */
-  $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($target) . "' SET authorized = concat(authorized, '" . mysql_real_escape_string($sender) . "-" . $auth . "');";
-  $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
-  if (mysql_num_rows($result) != 1) {
-    mysql_close();
-    writetolog("Error (requestfriend): User not found: " . mysql_real_escape_string($target));
-    die400('{"request":"requestfriend", "error":"User not found"}');
-  }
-
-  /* Write user:auth to sender */
-  $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($sender) . "' SET friends = concat(friends, '" . mysql_real_escape_string($target) . ":" . $auth . "');";
-  $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
-  if (mysql_num_rows($result) != 1) {
-    mysql_close();
-    writetolog("Error (requestfriend): Sender not found: " . mysql_real_escape_string($sender));
-    die500('{"request":"requestfriend", "error":"Sender not found"}');
-  }
-
-  // Done
-  writetolog("New friendship request: " . mysql_real_escape_string($target) . "->" . mysql_real_escape_string($sender));
-
-  mysql_close();
 }
 
 
 /* Handle request "grantfriend" */
 elseif (strcmp($request, 'grantfriend') == 0) {
 
-  /* HttpAuth */
-  list ($sender, $domain) = validateUser();
+  require("api/grantfriend.php");
 
-  /* Get data and sanitize */
-  //$sender = $json->{'sender'};
-  $target = $json->{'target'};
-  //$auth = $json->{'auth'};
-
-  if (empty($sender) || empty($target)) die500('Missing arguments');
-
-  connectToMySQL();
-
-  $query = "SELECT authorized FROM users WHERE username = '" . mysql_real_escape_string($sender) . "' AND authorized LIKE '%" . mysql_real_escape_string($target) . "%';";
-  $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
-  if (mysql_num_rows($result) == 1) {
-    $usersandtokens = explode(",", mysql_fetch_object($result), -1);
-    foreach ($usersandtokens as $singleuserandtoken) {
-      if (strpos($singleuserandtoken, $target) === 0) {
-        $newuserandtoken = str_replace("-", ":", $singleuserandtoken);
-        $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($sender) . "' SET authorized = REPLACE(authorized, '" . $singleuserandtoken . "', '" . $newuserandtoken . "');";
-        $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
-        writetolog("Granted friendship: " . $sender . "->" . $target);
-      }
-    }
-  }
-  mysql_free_result($result);
-
-  mysql_close();
 }
 
 
-/* Handle request "getfriends" */
-elseif (strcmp($request, 'getfriends') == 0) {
+/* Handle request "removefriend" */
+elseif (strcmp($request, 'removefriend') == 0) {
 
-  /* HttpAuth */
-  list ($sender, $domain) = validateUser();
+  require("api/removefriend.php");
 
-  /* Get data and sanitize */
-  //$sender = $json->{'sender'};
-
-  //if (false) die500('Missing arguments');
-
-  connectToMySQL();
-
-  $query = "SELECT authorized FROM users WHERE username = '" . mysql_real_escape_string($sender) . "';";
-  $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
-  if (mysql_num_rows($result) == 1) {
-    $data = array();
-    $friendsandtokens = explode(",", mysql_fetch_object($result), -1);
-    $i = 0;
-    foreach ($friendsandtokens as $singlefriendandtoken) {
-      $friendandtoken = explode(":", $singlefriendandtoken);
-      $data[$i] =  $friendandtoken[0];
-      $i++;
-    }
-  }
-  mysql_free_result($result);
-
-  mysql_close();
-
-  /* Send response */
-  class Response {
-    public $request = "friends";
-    public $error = 0;
-    public $data;
-  }
-
-  $response = new Response();
-  $response->data = $data;
-
-  echo json_encode($response);
 }
 
 

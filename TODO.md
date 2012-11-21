@@ -9,6 +9,7 @@ v0.2 (Alpha)
 ----
 - Request Friendship (PHP) *backend done for localhost*
 - Grant Friendship (PHP) *backend done for localhost*
+- Friends site (PHP)
 - Delete friends (PHP)
 - Delete locations - interval (PHP)
 - Delete locations - all (PHP)
@@ -25,6 +26,7 @@ v0.4 (Alpha)
 ------------
 - Bugfix
 - Delete user
+- Remove location jitter
 
 v0.5 (Beta)
 -----------

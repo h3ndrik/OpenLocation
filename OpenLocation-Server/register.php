@@ -40,14 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
   }
   else {
     connectToMySQL();
-    $query = "CREATE TABLE IF NOT EXISTS users(username varchar(255), password varchar(32), friends TEXT, authorized TEXT, PRIMARY KEY (username));";
+    $query = "CREATE TABLE IF NOT EXISTS users(username varchar(255), password varchar(32), token TEXT, friends TEXT, authorized TEXT, PRIMARY KEY (username));";
     $result = mysql_query($query) or die("Unable to create table: " . mysql_error());
     $local = substr($_POST["username"], 0, strrpos($_POST["username"], "@"));
     $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($local) . "';";
     $result = mysql_query($query) or die("MySQL Error (SELECT *): " . mysql_error());
     if (mysql_num_rows($result) == 0) {
       mysql_free_result($result);
-      $query = "INSERT INTO users VALUES('" . mysql_real_escape_string($local) . "', '" . mysql_real_escape_string($_POST['password']) . "', '', '');";
+      $query = "INSERT INTO users VALUES('" . mysql_real_escape_string($local) . "', '" . mysql_real_escape_string($_POST['password']) . "', '" . newtoken() . "', '', '');";
       $result = mysql_query($query) or die("MySQL Error (INSERT): " . mysql_error());
       $query = "CREATE TABLE IF NOT EXISTS `" . mysql_real_escape_string($local) . "`(time BIGINT, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, accuracy FLOAT, speed FLOAT, bearing FLOAT, provider varchar(16), ip char(16), PRIMARY KEY (time));";
       $result = mysql_query($query) or die("Unable to create table: " . mysql_error());

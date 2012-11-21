@@ -1,0 +1,66 @@
+<?php
+/* validate token for remote api access */
+function validateUserByToken($user, $token) {
+
+  if (strlen($token) != 32) die403("Token malformed");
+
+  if (strrpos($user, "@")) {
+    $local = substr($user, 0, strrpos($user, "@"));
+    $domain = substr($user, strrpos($user, "@")+1);
+  }
+    else {
+    $local = $user;
+    $domain = $_SERVER['HTTP_HOST'];
+  }
+
+  connectToMySQL();
+
+  /* Check if authorized */
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($local) . "' AND token LIKE '%" . mysql_real_escape_string($token) . "%';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
+  if (mysql_num_rows($result) != 1) {
+    mysql_free_result($result);
+    mysql_close();
+    writetolog("Error (validateUserByToken()): Not Authorized: " . mysql_real_escape_string($user));
+    die403("Error (validateUserByToken()): Not Authorized: " . mysql_real_escape_string($user));
+  }
+  mysql_free_result($result);
+
+  mysql_close();
+
+  return array($local, $domain);
+}
+
+
+/* Generates random string */
+function newtoken() {
+  if(function_exists('openssl_random_pseudo_bytes')) return bin2hex(openssl_random_pseudo_bytes(16, $cstrong));
+  else {
+    $alphabet = "0123456789abcdef";
+    $token = "";
+    for ($i=0; i<32; $i++) $token .= $alphabet[mt_rand(0, strlen($alphabet)-1)];
+    return $token;
+  }
+}
+
+
+/* get own token from database */
+function getowntoken($user) {
+  connectToMySQL();
+
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
+  if (mysql_num_rows($result) == 1) {
+    $row = mysql_fetch_array($result);
+    $tokens = explode(",", $row['token']);
+    mysql_free_result($result);
+    mysql_close();
+    return $tokens[0];
+  }
+  else die500("Could not find own token");
+  mysql_free_result($result);
+  mysql_close();
+}
+
+
+?>
