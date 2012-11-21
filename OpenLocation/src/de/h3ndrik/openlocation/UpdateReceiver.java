@@ -49,7 +49,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 				LocationReceiver.doActiveUpdate(context, true);
 			}
 			else {
-				Log.d(DEBUG_TAG, "Last update " + (System.currentTimeMillis() - db.dbhelper.lastUpdateMillis())/1000 + "sec ago, skipping");
+				Log.d(DEBUG_TAG, "Last update " + (System.currentTimeMillis() - db.dbhelper.lastUpdateMillis())/1000 + "sec ago, skipping active update");
 			}
 			db.dbhelper.close();
 			

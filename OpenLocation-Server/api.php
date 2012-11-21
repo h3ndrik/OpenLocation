@@ -129,26 +129,26 @@ elseif (strcmp($request, 'requestfriend') == 0) {
 
   /* Get data and sanitize */
   //$sender = $json->{'sender'};
-  $friend = $json->{'user'};
+  $target = $json->{'target'};
   $auth = newtoken();
 
-  if (empty($sender) || empty($friend) || empty($auth)) die500('Missing arguments');
+  if (empty($sender) || empty($target) || empty($auth)) die500('Missing arguments');
 
   connectToMySQL();
 
   /* Remove old tokens */
   // TODO: If executed, this breaks current auth!
-  $query = "SELECT authorized FROM users WHERE username = '" . mysql_real_escape_string($friend) . "' AND authorized LIKE '%" . mysql_real_escape_string($sender) . "%';";
+  $query = "SELECT authorized FROM users WHERE username = '" . mysql_real_escape_string($target) . "' AND authorized LIKE '%" . mysql_real_escape_string($sender) . "%';";
   $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
   if (mysql_num_rows($result) == 1) {
     $sendersandtokens = explode(",", mysql_fetch_object($result), -1);
     foreach ($sendersandtokens as $singlesenderandtoken) {
       if (strpos($singlesenderandtoken, $sender) === 0) {
         // Update user
-        $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($friend) . "' SET authorized = REPLACE(authorized, '" . $singlesenderandtoken . "', '');";
+        $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($target) . "' SET authorized = REPLACE(authorized, '" . $singlesenderandtoken . "', '');";
         $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
         // Update sender
-        $singleuserandtoken = str_replace($sender, $friend, $singlesenderandtoken);
+        $singleuserandtoken = str_replace($sender, $target, $singlesenderandtoken);
         $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($sender) . "' SET friends = REPLACE(friends, '" . $singleuserandtoken . "', '');";
         $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
         writetolog("Invalidate user:token (got new one): " . $singleuserandtoken);
@@ -158,16 +158,16 @@ elseif (strcmp($request, 'requestfriend') == 0) {
   mysql_free_result($result);
 
   /* Write user-auth to user */
-  $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($friend) . "' SET authorized = concat(authorized, '" . mysql_real_escape_string($sender) . "-" . $auth . "');";
+  $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($target) . "' SET authorized = concat(authorized, '" . mysql_real_escape_string($sender) . "-" . $auth . "');";
   $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
   if (mysql_num_rows($result) != 1) {
     mysql_close();
-    writetolog("Error (requestfriend): User not found: " . mysql_real_escape_string($friend));
+    writetolog("Error (requestfriend): User not found: " . mysql_real_escape_string($target));
     die400('{"request":"requestfriend", "error":"User not found"}');
   }
 
   /* Write user:auth to sender */
-  $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($sender) . "' SET friends = concat(friends, '" . mysql_real_escape_string($friend) . ":" . $auth . "');";
+  $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($sender) . "' SET friends = concat(friends, '" . mysql_real_escape_string($target) . ":" . $auth . "');";
   $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
   if (mysql_num_rows($result) != 1) {
     mysql_close();
@@ -176,7 +176,7 @@ elseif (strcmp($request, 'requestfriend') == 0) {
   }
 
   // Done
-  writetolog("New friendship request: " . mysql_real_escape_string($friend) . "->" . mysql_real_escape_string($sender));
+  writetolog("New friendship request: " . mysql_real_escape_string($target) . "->" . mysql_real_escape_string($sender));
 
   mysql_close();
 }
@@ -190,17 +190,29 @@ elseif (strcmp($request, 'grantfriend') == 0) {
 
   /* Get data and sanitize */
   //$sender = $json->{'sender'};
-  $friend = $json->{'user'};
+  $target = $json->{'target'};
   //$auth = $json->{'auth'};
 
-  if (empty($sender) || empty($friend)) die500('Missing arguments');
-
+  if (empty($sender) || empty($target)) die500('Missing arguments');
 
   connectToMySQL();
 
-  mysql_close();
+  $query = "SELECT authorized FROM users WHERE username = '" . mysql_real_escape_string($sender) . "' AND authorized LIKE '%" . mysql_real_escape_string($target) . "%';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
+  if (mysql_num_rows($result) == 1) {
+    $usersandtokens = explode(",", mysql_fetch_object($result), -1);
+    foreach ($usersandtokens as $singleuserandtoken) {
+      if (strpos($singleuserandtoken, $target) === 0) {
+        $newuserandtoken = str_replace("-", ":", $singleuserandtoken);
+        $query = "UPDATE users WHERE username = '" . mysql_real_escape_string($sender) . "' SET authorized = REPLACE(authorized, '" . $singleuserandtoken . "', '" . $newuserandtoken . "');";
+        $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
+        writetolog("Granted friendship: " . $sender . "->" . $target);
+      }
+    }
+  }
+  mysql_free_result($result);
 
-  die500("Not implemented");
+  mysql_close();
 }
 
 
