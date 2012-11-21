@@ -9,6 +9,7 @@ v0.2 (Alpha)
 ----
 - Request Friendship (PHP)
 - Grant Friendship (PHP)
+- Delete friends (PHP)
 - Delete locations - interval (PHP)
 - Delete locations - all (PHP)
 - Delete pref (Android)

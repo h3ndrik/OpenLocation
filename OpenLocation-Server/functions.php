@@ -207,6 +207,16 @@ function connectToMySQL() {
   mysql_select_db(DB_NAME) or die500("Unable to select database");
 }
 
+function newtoken() {
+  if(function_exists('openssl_random_pseudo_bytes')) return bin2hex(openssl_random_pseudo_bytes(16, $cstrong));
+  else {
+    $alphabet = "0123456789abcdef";
+    $token = "";
+    for ($i=0; i<32; $i++) $token .= $alphabet[mt_rand(0, strlen($alphabet)-1)];
+    return $token;
+  }
+}
+
 function elapsed_time($timestamp, $precision = 2) {
   $time = time() - $timestamp;
   $a = array('decade' => 315576000, 'year' => 31557600, 'month' => 2629800, 'week' => 604800, 'day' => 86400, 'hour' => 3600, 'min' => 60, 'sec' => 1);
