@@ -216,6 +216,49 @@ elseif (strcmp($request, 'grantfriend') == 0) {
 }
 
 
+/* Handle request "getfriends" */
+elseif (strcmp($request, 'getfriends') == 0) {
+
+  /* HttpAuth */
+  list ($sender, $domain) = validateUser();
+
+  /* Get data and sanitize */
+  //$sender = $json->{'sender'};
+
+  //if (false) die500('Missing arguments');
+
+  connectToMySQL();
+
+  $query = "SELECT authorized FROM users WHERE username = '" . mysql_real_escape_string($sender) . "';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
+  if (mysql_num_rows($result) == 1) {
+    $data = array();
+    $friendsandtokens = explode(",", mysql_fetch_object($result), -1);
+    $i = 0;
+    foreach ($friendsandtokens as $singlefriendandtoken) {
+      $friendandtoken = explode(":", $singlefriendandtoken);
+      $data[$i] =  $friendandtoken[0];
+      $i++;
+    }
+  }
+  mysql_free_result($result);
+
+  mysql_close();
+
+  /* Send response */
+  class Response {
+    public $request = "friends";
+    public $error = 0;
+    public $data;
+  }
+
+  $response = new Response();
+  $response->data = $data;
+
+  echo json_encode($response);
+}
+
+
 /* Could not handle $request */
 else {
   die500('Error or not implemented');
