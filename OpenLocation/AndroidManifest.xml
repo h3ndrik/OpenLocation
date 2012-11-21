@@ -39,12 +39,12 @@
         <receiver
             android:name="de.h3ndrik.openlocation.LocationReceiver"
             android:enabled="true"
-            android:exported="false" >
+            android:exported="true" >
         </receiver>
                 <receiver
             android:name="de.h3ndrik.openlocation.UpdateReceiver"
             android:enabled="true"
-            android:exported="false" >
+            android:exported="true" >
         </receiver>
         <receiver
             android:name="de.h3ndrik.openlocation.StartupReceiver"
