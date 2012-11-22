@@ -63,4 +63,36 @@ function getowntoken($user) {
 }
 
 
+function sendrequestfriend($user_local, $target) {
+  list ($target_local, $target_domain, $target_fullusername) = explode_username($target);
+
+  /* clear all previous tokens 'authorized' (going to generate new one) */
+  removeToken($user_local, $target_fullusername, 'authorized');
+
+  /* generate new token authorizing target */
+  $newtoken = newtoken();
+
+  /* store new token $target 'authorized' */
+  storeToken($user_local, $target_fullusername, $newtoken, 'authorized');
+
+  /* if pending friends, mark tokens valid */
+  if (isKnown($user_local, $target_fullusername, 'friends')) {
+    markTokenValid($user_local, $target_fullusername, 'authorized');
+    markTokenValid($user_local, $target_fullusername, 'friends');
+  }
+
+  /* Send requestfriend to $target */
+
+  $url = "http://" . $target_domain . "/api.php";
+  $req_json = json_encode(array("request" => "requestfriend", "sender" => $user_local . "@" . $_SERVER['HTTP_HOST'], "target" => $target_fullusername, "token" => $newtoken));
+
+  $http_result = doBlockingHttpJsonRequest($url, $req_json);
+  $result = json_decode($http_result);
+
+  if ($result != null && $result->{'request'} == "requestfriend" && $result->{'error'} == "0") {
+    echo "<span style=\"color:#00C000\">Successfully requested friendship with user &quot;" . htmlspecialchars($target_local) . "&quot</span>\n";
+    // TODO: only do local work if target response is ok
+  }
+  else die ('Bad Answer: ' . $http_result);
+}
 ?>

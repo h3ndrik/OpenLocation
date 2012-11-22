@@ -6,8 +6,8 @@ function connectToMySQL() {
 }
 
 
-function removeUserAndToken($sender, $target, $column) {
-  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($sender) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . "%';";
+function removeToken($user, $target, $column) {
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . "%';";
   $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
   if (mysql_num_rows($result) == 1) {
     $data = array();
@@ -15,7 +15,7 @@ function removeUserAndToken($sender, $target, $column) {
     $usersandtokens = explode(",", $row[$column]);
     foreach ($usersandtokens as $singleuserandtoken) {
       if (strpos($singleuserandtoken, $target) === 0) {
-        $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . ",', '') WHERE username = '" . mysql_real_escape_string($sender) . "';";
+        $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . ",', '') WHERE username = '" . mysql_real_escape_string($user) . "';";
         $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
       }
     }
@@ -25,17 +25,57 @@ function removeUserAndToken($sender, $target, $column) {
     return false;
   }
   mysql_free_result($result);
-  return true;  
+  return true;
 }
 
 
-function storeUserAndToken($sender, $target, $delimiter, $token, $column) {
-  $query = "UPDATE users SET " . $column . " = concat(" . $column . ", '" . mysql_real_escape_string($target) . $delimiter . $token . ",') WHERE username = '" . mysql_real_escape_string($sender) . "';";
+function storeToken($user, $target, $token, $column) {
+  $query = "UPDATE users SET " . $column . " = concat(" . $column . ", '" . mysql_real_escape_string($target) . "-" . $token . ",') WHERE username = '" . mysql_real_escape_string($user) . "';";
   $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
   if (mysql_affected_rows() != 1) {
     mysql_close();
-    writetolog("Error: User not found: " . $sender);
-    die400("Error: User not found: " . $sender);
+    writetolog("Error: User not found: " . $user);
+    die400("Error: User not found: " . $user);
+  }
+}
+
+
+function markTokenValid($user, $target, $column) {
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . "%';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
+  if (mysql_num_rows($result) == 1) {
+    $row = mysql_fetch_array($result);
+    $usersandtokens = explode(",", $row[$column]);
+    foreach ($usersandtokens as $singleuserandtoken) {  // TODO: there should be only one token, invalidate all previous!!!
+      if (strpos($singleuserandtoken, $target) === 0) {
+        $updateduserandtoken = str_replace("-", ":", $singleuserandtoken);
+        $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . ",', '" . $updateduserandtoken . "') WHERE username = '" . mysql_real_escape_string($user) . "';";
+        $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
+      }
+    }
+  }
+  else {
+    // Could not find $target in $column of user $user
+    mysql_free_result($result);
+    return false;
+  }
+  mysql_free_result($result);
+  return true;
+}
+
+
+function isKnown($user, $target, $column) {
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . "%';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
+  if (mysql_num_rows($result) == 1) {
+    // is known
+    mysql_free_result($result);
+    return true;
+  }
+  else {
+    // Could not find $target in $column of user $user
+    mysql_free_result($result);
+    return false;
   }
 }
 

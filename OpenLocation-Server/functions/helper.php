@@ -12,6 +12,28 @@ function writetolog($error) {
 }
 
 
+/* Split username */
+function explode_username($username) {
+  if (strrpos($username, "@")) {
+    if (validEmail($username)) {
+      $local = substr($username, 0, strrpos($username, "@"));
+      $domain = substr($username, strrpos($username, "@")+1);
+    }
+    else
+      return null;
+  }
+  elseif (strlen($username) > 2) {
+    $local = $username;
+    $domain = $_SERVER['HTTP_HOST'];
+  }
+  else
+    return null;
+  $fullusername = $local . "@" . $domain;
+
+  return array($local, $domain, $fullusername);
+}
+
+
 /* Returns true for syntactically correct email address */
 function validEmail($email)
 {

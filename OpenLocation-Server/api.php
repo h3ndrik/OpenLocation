@@ -51,10 +51,10 @@ elseif (strcmp($request, 'requestfriend') == 0) {
 }
 
 
-/* Handle request "grantfriend" */
-elseif (strcmp($request, 'grantfriend') == 0) {
+/* Handle request "newfriend" */
+elseif (strcmp($request, 'newfriend') == 0) {
 
-  require("api/grantfriend.php");
+  require("api/newfriend.php");
 
 }
 

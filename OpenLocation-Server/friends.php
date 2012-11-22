@@ -17,23 +17,17 @@ $token = getowntoken($user);
 /* Request removefriend */
 if (isset($_POST["removefriend"])) {
   if (!validEmail($_POST["removefriend"])) die400("Malformed Request");
-  if (strrpos($_POST["removefriend"], "@")) {
-    $local = substr($_POST["removefriend"], 0, strrpos($_POST["removefriend"], "@"));
-    $remotedomain = substr($_POST["removefriend"], strrpos($_POST["removefriend"], "@")+1);
-  }
-    else {
-    $local = $_POST["removefriend"];
-    $remotedomain = $_SERVER['HTTP_HOST'];
-  }
 
-  $url = "http://" . $remotedomain . "/api.php";
+  list ($target_local, $target_domain, $target_fullusername) = explode_username($target);
+
+  $url = "http://" . $target_domain . "/api.php";
   $req_json = json_encode(array("request" => "removefriend", "sender" => $user, "token" => $token, "target" => $_POST["removefriend"]));
 
   $http_result = doBlockingHttpJsonRequest($url, $req_json);
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "removefriend" && $result->{'error'} == "0") {
-    echo "<span style=\"color:#00C000\">Successfully removed user &quot;" . htmlspecialchars($local) . "&quot</span>\n";
+    echo "<span style=\"color:#00C000\">Successfully removed user &quot;" . htmlspecialchars($target_local) . "&quot</span>\n";
   }
   else die ('Bad Answer: ' . $http_result);
 }
@@ -42,29 +36,10 @@ if (isset($_POST["removefriend"])) {
 /* Request requestfriend */
 if (isset($_POST["requestfriend"])) {
   if (empty($_POST["requestfriend"])) die400("Malformed Request");
-  if (strrpos($_POST["requestfriend"], "@")) {
-    $local = substr($_POST["requestfriend"], 0, strrpos($_POST["requestfriend"], "@"));
-    $remotedomain = substr($_POST["requestfriend"], strrpos($_POST["requestfriend"], "@")+1);
-  }
-    else {
-    $local = $_POST["requestfriend"];
-    $remotedomain = $_SERVER['HTTP_HOST'];
-  }
 
-  $url = "http://" . $remotedomain . "/api.php";
-  $req_json = json_encode(array("request" => "requestfriend", "sender" => $user . "@" . $domain, "target" => $local));
+  list ($target_local, $target_domain, $target_fullusername) = explode_username($_POST["requestfriend"]);
 
-  $http_result = doBlockingHttpJsonRequest($url, $req_json);
-  $result = json_decode($http_result);
-
-  if ($result != null && $result->{'request'} == "requestfriend" && $result->{'error'} == "0" && strlen($result->{'token'}) == 32) {
-    echo "<span style=\"color:#00C000\">Successfully requested friendship with user &quot;" . htmlspecialchars($local) . "&quot</span>\n";
-    connectToMySQL();
-    storeUserAndToken($user, $local . "@" . $domain, "-", $result->{'token'}, "friends");
-    storeUserAndToken($user, $local . "@" . $domain, ":", newtoken(), "authorized");
-    mysql_close();
-  }
-  else die ('Bad Answer: ' . $http_result);
+  sendrequestfriend($user, $target_fullusername);
 }
 
 
