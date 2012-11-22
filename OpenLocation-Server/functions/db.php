@@ -90,7 +90,8 @@ function isKnown($user, $target, $column, $delimiter) {
   }
 }
 
-
+/* get friends */
+/* Usage: list ($friends, $friends_pending, $friends_incoming) = getfriends($user); */
 function getfriends($user_local) {
   connectToMySQL();
   $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user_local) . "';";

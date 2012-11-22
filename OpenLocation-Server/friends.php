@@ -77,7 +77,7 @@ else $rows = null;
 echo "<h3>Friends:</h3>\n";
 if (count($rows) > 0) {
   for ($i=0; $i<count($rows); $i++) {
-    echo "<p>" . $rows[$i] . " <form action=\"\" method=\"POST\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
+    echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\"><a href=\"/?friend=" . $rows[$i] . "\">" . $rows[$i] . "</a> <input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
   }
 }
 else echo "<p>none</p>\n";
@@ -88,7 +88,7 @@ else $rows = null;
 if (count($rows) > 0) {
   echo "<h4>Pending:</h4>\n";
   for ($i=0; $i<count($rows); $i++) {
-    echo "<p>" . $rows[$i] . " <form action=\"\" method=\"POST\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
+    echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\">" . $rows[$i] . " <input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
   }
 }
 
@@ -98,12 +98,12 @@ else $rows = null;
 if (count($rows) > 0) {
   echo "<h4>Incoming Requests:</h4>\n";
   for ($i=0; $i<count($rows); $i++) {
-    echo "<p>" . $rows[$i] . " <form action=\"\" method=\"POST\"><input type=\"hidden\" name=\"localrequestfriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"ACCEPT\" /></form> <form action=\"\" method=\"POST\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
+    echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\">" . $rows[$i] . " <input type=\"hidden\" name=\"localrequestfriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"ACCEPT\" /></form><form action=\"\" method=\"POST\" style=\"display:inline;\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
   }
 }
 
 echo "<form action=\"\" method=\"POST\">\n";
-echo "<p>Request friendship with: <input type=\"text\" name=\"localrequestfriend\" /><input type=\"submit\" /></p>\n";
+echo "<p>Request friendship with: <input type=\"text\" name=\"sendrequestfriend\" /><input type=\"submit\" /></p>\n";
 echo "</form>\n";
 
 

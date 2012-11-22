@@ -55,37 +55,15 @@ function onLocationError(e) {
 map.on('locationerror', onLocationError);
 
 <?php
-  connectToMySQL();
-
   // Show Location of friends
   // get friends
-  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "';";
-
-  $result = mysql_query($query) or die("MySQL Error (SELECT *): " . mysql_error());
-
-  if (mysql_num_rows($result) == 1) {
-    $row = mysql_fetch_object($result);
-    $friends = explode(",",$row->friends);
-    mysql_free_result($result);
-  }
-  else {
-    mysql_free_result($result);
-    die('MySQL Error');
-  }
+  list ($friends, $friends_pending, $friends_incoming) = getfriends($user);
 
   foreach($friends as $friend) {
     if (empty($friend)) continue;
 
-    if (strrpos($friend, ":")) {
-      $friend_name = substr($friend, 0, strrpos($friend, ":"));
-      $friend_auth = substr($friend, strrpos($friend, ":")+1);
-    }
-    else die("No auth");
-    if (strrpos($friend_name, "@")) {
-      $friend_domain = substr($friend_name, strrpos($friend_name, "@")+1);
-      $friend_local = substr($friend_name, 0, strrpos($friend_name, "@"));
-    }
-    else die("Incorrect username");
+    list ($friend_local, $friend_domain, $friend_fullusername) = explode_username($friend);
+    $friend_auth = getfriendtoken($user, $friend);
 
     // Überprüfen ob localhost
     //if (strcmp($friend_domain, $_SERVER['HTTP_HOST']) == 0) {
@@ -94,7 +72,7 @@ map.on('locationerror', onLocationError);
 
     // request json from remote
     $url = "http://" . $friend_domain . "/api.php";
-    $req_json = json_encode(array("request" => "getlocation", "sender" => mysql_real_escape_string($user . "@" . $domain), "user" => mysql_real_escape_string($friend_local), "auth" => $friend_auth, "starttime" => (string)(time()*1000-86400000), "endtime" => (string)time()*1000));
+    $req_json = json_encode(array("request" => "getlocation", "sender" => $user . "@" . $domain, "user" => $friend_local, "auth" => $friend_auth, "starttime" => (string)(time()*1000-86400000), "endtime" => (string)(time()*1000)));
     //$req_json = base64_encode(gzdeflate(json_encode(array("request" => "getlocationdata", "sender" => mysql_real_escape_string($user . "@" . $domain), "user" => mysql_real_escape_string($friend_local), "auth" => $friend_auth))));
 
     $http_result = doBlockingHttpJsonRequest($url, $req_json);
@@ -119,12 +97,17 @@ map.on('locationerror', onLocationError);
 
       echo "], {color: 'green'}).addTo(map);\n";
 
-      echo 'var marker = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
-      echo '    .bindPopup("' . $friend_name . ', ' . elapsed_time(intval($row->time / 1000)) . '").openPopup();' . "\n\n";
+      echo 'var marker_' . $friend_local . ' = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
+      echo '    .bindPopup("' . $friend_local . ', ' . elapsed_time(intval($row->time / 1000)) . '");' . "\n\n";
+
+      if(isset($_GET['friend']) && $_GET['friend'] == $friend) {
+        $setview = array("name" => $friend_local, "latitude" => $row->latitude, "longitude" => $row->longitude);
+      }
     }
   }
 
   // Show own Path and Location
+  connectToMySQL();
   $starttime = (string)(time()*1000-86400000);
   $endtime = (string)(time()*1000);
   $query = "SELECT * FROM " . mysql_real_escape_string($user) . "  WHERE time > " . mysql_real_escape_string($starttime) . " AND time < " . mysql_real_escape_string($endtime) . " ORDER BY time ASC;";
@@ -141,12 +124,16 @@ map.on('locationerror', onLocationError);
 
     echo "], {color: 'red'}).addTo(map);\n";
 
-    echo "map.setView([" . $row->latitude . ", " . $row->longitude . "], 15);\n";
+    if(!isset($setview)) {
+      $setview = array("name" => $user, "latitude" => $row->latitude, "longitude" => $row->longitude);
+    }
 
-    echo 'var marker = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
-    echo '    .bindPopup("' . $user . ', ' . elapsed_time(intval($row->time / 1000)) . '").openPopup();' . "\n\n";
+    echo 'var marker_' . $user . ' = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
+    echo '    .bindPopup("' . $user . ', ' . elapsed_time(intval($row->time / 1000)) . '");' . "\n\n";
 
+    echo "map.setView([" . $setview['latitude'] . ", " . $setview['longitude'] . "], 15);\n";
 
+    echo "marker_" . $setview['name'] . ".openPopup();";    // setView before marker.openPopup(), otherwise it will be closed immediately
 
     mysql_free_result($result);
   }

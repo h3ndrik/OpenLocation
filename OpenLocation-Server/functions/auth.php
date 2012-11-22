@@ -68,6 +68,30 @@ function getowntoken($user) {
 }
 
 
+/* get friend token from database */
+/* returns last valid token or false if nothing found */
+function getfriendtoken($user, $friend) {
+  connectToMySQL();
+  $token = false;
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
+  if (mysql_num_rows($result) == 1) {
+    $row = mysql_fetch_array($result);
+    $friendsandtokens = explode(",", $row['friends']);
+    foreach ($friendsandtokens as $friend) {
+      //if (!empty($friend) && strrpos($friend, "-")) $token = substr($friend, strrpos($friend, "-")+1);
+      if (!empty($friend) && strrpos($friend, ":")) $token = substr($friend, strrpos($friend, ":")+1);
+    }
+    mysql_free_result($result);
+    mysql_close();
+    return $token;
+  }
+  else die500("Could not find friend token");
+  mysql_free_result($result);
+  mysql_close();
+}
+
+
 function sendrequestfriend($user_local, $target) {
   list ($target_local, $target_domain, $target_fullusername) = explode_username($target);
 
