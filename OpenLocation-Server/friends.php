@@ -54,7 +54,13 @@ if (isset($_POST["sendrequestfriend"])) {
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "sendrequestfriend" && $result->{'error'} == "0") {
-    echo "<span style=\"color:#00C000\">Successfully granted friendship to user &quot;" . htmlspecialchars($local) . "&quot</span>\n";
+    echo "<span style=\"color:#00C000\">Successfully granted friendship to user &quot;" . htmlspecialchars($target_fullusername) . "&quot</span>\n";
+  }
+  elseif ($result != null && $result->{'request'} == "sendrequestfriend" && $result->{'error'} == "User does not exist") {
+    echo "<span style=\"color:#C00000\">User &quot;" . htmlspecialchars($target_fullusername) . "&quot does not exist</span>\n";
+  }
+  elseif ($result != null && $result->{'request'} == "sendrequestfriend" && $result->{'error'} == "Is already a friend") {
+    echo "<span style=\"color:#C00000\">User &quot;" . htmlspecialchars($target_fullusername) . "&quot is already a friend</span>\n";
   }
   else die ('Bad Answer: ' . $http_result);
 }

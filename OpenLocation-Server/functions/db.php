@@ -90,6 +90,26 @@ function isKnown($user, $target, $column, $delimiter) {
   }
 }
 
+
+function isUser($user) {
+  connectToMySQL();
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
+  if (mysql_num_rows($result) == 1) {
+    // is known
+    mysql_free_result($result);
+    mysql_close();
+    return true;
+  }
+  else {
+    // not known
+    mysql_free_result($result);
+    mysql_close();
+    return false;
+  }
+}
+
+
 /* get friends */
 /* Usage: list ($friends, $friends_pending, $friends_incoming) = getfriends($user); */
 function getfriends($user_local) {

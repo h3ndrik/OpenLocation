@@ -101,15 +101,6 @@ function sendrequestfriend($user_local, $target) {
   /* generate new token authorizing target */
   $newtoken = newtoken();
 
-  /* store new token $target 'authorized' */
-  storeToken($user_local, $target_fullusername, $newtoken, 'authorized');
-
-  /* if pending friends, mark tokens valid */
-  if (isKnown($user_local, $target_fullusername, 'friends', '-')) {
-    markTokenValid($user_local, $target_fullusername, 'authorized');
-    markTokenValid($user_local, $target_fullusername, 'friends');
-  }
-
   /* Send requestfriend to $target */
   $url = "http://" . $target_domain . "/api.php";
   $req_json = json_encode(array("request" => "requestfriend", "sender" => $user_local . "@" . $_SERVER['HTTP_HOST'], "target" => $target_fullusername, "token" => $newtoken));
@@ -118,8 +109,21 @@ function sendrequestfriend($user_local, $target) {
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "requestfriend" && $result->{'error'} == "0") {
-    return true;
-    // TODO: only do local work if target response is ok
+    /* store new token $target 'authorized' */
+    storeToken($user_local, $target_fullusername, $newtoken, 'authorized');
+
+    /* if pending friends, mark tokens valid */
+    if (isKnown($user_local, $target_fullusername, 'friends', '-')) {
+      markTokenValid($user_local, $target_fullusername, 'authorized');
+      markTokenValid($user_local, $target_fullusername, 'friends');
+    }
+    return 0;
+  }
+  elseif ($result != null && $result->{'request'} == "requestfriend" && $result->{'error'} == "User does not exist") {
+    return -1;
+  }
+  elseif ($result != null && $result->{'request'} == "requestfriend" && $result->{'error'} == "Is already a friend") {
+    return -2;
   }
   else die ('{"request":"sendrequestfriend", "error":"sendrequestfriend(): requestfriend returned bad answer: ' . $http_result . '"}');
 }

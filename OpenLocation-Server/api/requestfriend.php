@@ -10,12 +10,15 @@
 
   if (!validEmail($sender) || empty($target) || empty($token)) die('{"request":"requestfriend", "error":"Wrong arguments"}');
 
+  /* Check if authorized */
+  // not necessary  // TODO: really?
+
   list ($target_local, $target_domain, $target_fullusername) = explode_username($target);
 
   if ($target_domain != $_SERVER['HTTP_HOST']) die('{"request":"requestfriend", "error":"Wrong host"}');
 
-  /* Check if authorized */
-  // not necessary  // TODO: really?
+  /* Check if user exists */
+  if (!isUser($target_local)) die('{"request":"requestfriend", "error":"User does not exist"}');
 
   /* Cancel if $sender is known as 'friends' */
   if (isKnown($target_local, $sender, 'friends', ':')) die('{"request":"requestfriend", "error":"Is already a friend"}');

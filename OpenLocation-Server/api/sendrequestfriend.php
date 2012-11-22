@@ -15,8 +15,21 @@
   /* Authorization */
   list ($user_local, $domain) = validateUserByToken($sender, $token);
 
-  sendrequestfriend($user_local, $target);
+  $error = sendrequestfriend($user_local, $target);
+  switch ($error) {
+    case 0:
+      $response = '{"request":"sendrequestfriend", "error":"0"}';
+      break;
+    case -1:
+      $response = '{"request":"sendrequestfriend", "error":"User does not exist"}';
+      break;
+    case -2:
+      $response = '{"request":"sendrequestfriend", "error":"Is already a friend"}';
+      break;
+    default:
+      $response = '{"request":"sendrequestfriend", "error":"Unknown error"}';
+      break;
+  }
 
-  $response = '{"request":"sendrequestfriend", "error":"0"}';
   echo base64_encode(gzdeflate($response));
 ?>
