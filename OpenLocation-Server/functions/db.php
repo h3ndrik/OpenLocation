@@ -55,7 +55,7 @@ function markTokenValid($user, $target, $column) {
     foreach ($usersandtokens as $singleuserandtoken) {  // TODO: there should be only one token, invalidate all previous!!!
       if (strpos($singleuserandtoken, $target) === 0) {
         $updateduserandtoken = str_replace("-", ":", $singleuserandtoken);
-        $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . ",', '" . $updateduserandtoken . "') WHERE username = '" . mysql_real_escape_string($user) . "';";
+        $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . "', '" . $updateduserandtoken . "') WHERE username = '" . mysql_real_escape_string($user) . "';";
         $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
       }
     }
@@ -72,9 +72,9 @@ function markTokenValid($user, $target, $column) {
 }
 
 
-function isKnown($user, $target, $column) {
+function isKnown($user, $target, $column, $delimiter) {
   connectToMySQL();
-  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . ":%';";
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . $delimiter . "%';";
   $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
   if (mysql_num_rows($result) == 1) {
     // is known

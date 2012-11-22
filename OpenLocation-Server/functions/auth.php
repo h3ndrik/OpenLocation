@@ -81,7 +81,7 @@ function sendrequestfriend($user_local, $target) {
   storeToken($user_local, $target_fullusername, $newtoken, 'authorized');
 
   /* if pending friends, mark tokens valid */
-  if (isKnown($user_local, $target_fullusername, 'friends')) {
+  if (isKnown($user_local, $target_fullusername, 'friends', '-')) {
     markTokenValid($user_local, $target_fullusername, 'authorized');
     markTokenValid($user_local, $target_fullusername, 'friends');
   }

@@ -18,13 +18,13 @@
   // not necessary  // TODO: really?
 
   /* Cancel if $sender is known as 'friends' */
-  if (isKnown($target_local, $sender, 'friends')) die('{"request":"requestfriend", "error":"Is already a friend"}');
+  if (isKnown($target_local, $sender, 'friends', ':')) die('{"request":"requestfriend", "error":"Is already a friend"}');
 
   /* Temp store $token in 'friends', it authorizes me for $sender */
   storeToken($target_local, $sender, $token, 'friends');
 
   /* Mark tokens valid, if $sender is known 'authorized' */
-  if (isKnown($target_local, $sender, 'authorized')) {
+  if (isKnown($target_local, $sender, 'authorized', '-')) {
     markTokenValid($target_local, $sender, 'authorized');
     markTokenValid($target_local, $sender, 'friends');
   }

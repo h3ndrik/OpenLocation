@@ -7,10 +7,10 @@ done
 
 v0.2 (Alpha)
 ----
-- Request Friendship (PHP) *backend done for localhost*
-- Grant Friendship (PHP) *backend done for localhost*
-- Friends site (PHP)
-- Delete friends (PHP)
+- Request Friendship (PHP) *done, awaiting bugs*
+- Grant Friendship (PHP) *done, awaiting bugs*
+- Friends site (PHP) *in progress*
+- Delete friends (PHP) *done, awaiting bugs*
 - Delete locations - interval (PHP)
 - Delete locations - all (PHP)
 - Delete pref (Android)
@@ -25,12 +25,14 @@ v0.3 (Alpha)
 v0.4 (Alpha)
 ------------
 - Bugfix
+- check PHP for security problems (eg injection, no auth)
+- don't make local http connections (PHP)
 - Delete user
-- Remove location jitter
 
 v0.5 (Beta)
 -----------
 - Bugfix
+- Remove location jitter
 - Release
 
 v0.6 (Beta)
