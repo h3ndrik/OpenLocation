@@ -78,9 +78,11 @@ function getfriendtoken($user, $friend) {
   if (mysql_num_rows($result) == 1) {
     $row = mysql_fetch_array($result);
     $friendsandtokens = explode(",", $row['friends']);
-    foreach ($friendsandtokens as $friend) {
-      //if (!empty($friend) && strrpos($friend, "-")) $token = substr($friend, strrpos($friend, "-")+1);
-      if (!empty($friend) && strrpos($friend, ":")) $token = substr($friend, strrpos($friend, ":")+1);
+    foreach ($friendsandtokens as $friendandtoken) {
+      if (!empty($friendandtoken) && strpos($friendandtoken, $friend) === 0) {
+        //if (strrpos($friend, "-")) $token = substr($friend, strrpos($friend, "-")+1);
+        if (strrpos($friendandtoken, ":")) $token = substr($friendandtoken, strrpos($friendandtoken, ":")+1);
+      }
     }
     mysql_free_result($result);
     mysql_close();

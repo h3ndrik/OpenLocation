@@ -95,14 +95,24 @@ map.on('locationerror', onLocationError);
 
     // Draw
     $result = json_decode($http_result);
-    if ($result == null || empty($result)) die ('Bad json (empty): ' . $http_result);
+    if ($result == null || empty($result) || $result->{'request'} != "location") {
+      // fail silently
+      echo "// Bad response for " . $friend_fullusername . "\n\n";
+      //die ('Bad json: ' . $http_result);
+      $rows = null;
+    }
 
-    if (isset($result->{'data'})) $rows = $result->{'data'};
-    else $rows = null;
+    if (isset($result->{'data'})) {
+      $rows = $result->{'data'};
+    }
+    else {
+      echo "// No data for " . $friend_fullusername . "\n\n";
+      $rows = null;
+    }
 
     if (count($rows) > 0) {
 
-      echo "var polyline = L.polyline([";
+      echo 'var polyline_' . $friend_local . ' = L.polyline([';
 
       for ($i=0; $i<count($rows)-1; $i++) {
         $row = $rows[$i];
@@ -130,7 +140,7 @@ map.on('locationerror', onLocationError);
   $result = mysql_query($query) or die("MySQL Error (SELECT): " . mysql_error());
 
   if (mysql_num_rows($result) != false && mysql_num_rows($result) > 0) {
-    echo "var polyline = L.polyline([";
+    echo 'var polyline_' . $user . ' = L.polyline([';
     for ($i=0; $i<mysql_num_rows($result)-1; $i++) {
       $row = mysql_fetch_object($result);
       echo '[' . $row->latitude . ', ' . $row->longitude . '], ';
