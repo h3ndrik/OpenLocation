@@ -168,9 +168,11 @@ if (mysql_num_rows($result) == 1) {
   // Benutzer => Passwort
   $benutzer = array(mysql_real_escape_string($daten['username']) => $row->password);
   mysql_free_result($result);
+  mysql_close();
 }
 else {
   mysql_free_result($result);
+  mysql_close();
   send401Header($realm);
   echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
   writetolog("Error: User \"" . $local . "\" not found.");

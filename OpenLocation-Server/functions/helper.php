@@ -13,6 +13,7 @@ function writetolog($error) {
 
 
 /* Split username */
+/* Usage:   list ($username_local, $username_domain, $username_fullusername) = explode_username($username) */
 function explode_username($username) {
   if (strrpos($username, "@")) {
     if (validEmail($username)) {

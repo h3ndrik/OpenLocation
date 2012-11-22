@@ -8,13 +8,13 @@ require_once('functions.php');
 
 /* Sanity checks */
 if ($_SERVER['REQUEST_METHOD'] !== "POST") die400('POST expected!');
-if (empty($_POST["json"])) die400 ('Wrong Argument(s)');
+if (empty($_POST["json"])) die('{"request":"", "error":"API: No JSON found"}');
 
 /* Decode JSON */
-$json = json_decode(gzinflate(base64_decode($_POST["json"]))) or die500('Bad JSON');
+$json = json_decode(gzinflate(base64_decode($_POST["json"]))) or die('{"request":"", "error":"API: Error decoding JSON"}');
 if ($json == NULL || empty($json)) {
   writetolog("Error: API: got Bad JSON: " . gzinflate(base64_decode($_POST["json"])));
-  die500('API: got Bad JSON');
+  die('{"request":"", "error":"API: Bad JSON received"}');
 }
 $request = $json->{'request'};
 
@@ -51,10 +51,10 @@ elseif (strcmp($request, 'requestfriend') == 0) {
 }
 
 
-/* Handle request "newfriend" */
-elseif (strcmp($request, 'newfriend') == 0) {
+/* Handle request "sendrequestfriend" */
+elseif (strcmp($request, 'sendrequestfriend') == 0) {
 
-  require("api/newfriend.php");
+  require("api/sendrequestfriend.php");
 
 }
 
@@ -69,7 +69,7 @@ elseif (strcmp($request, 'removefriend') == 0) {
 
 /* Could not handle $request */
 else {
-  die500('Error or not implemented');
+  die('{"request":"", "error":"API: Not implemented"}');
 }
 
 ?>

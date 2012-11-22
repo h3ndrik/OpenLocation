@@ -7,6 +7,7 @@ function connectToMySQL() {
 
 
 function removeToken($user, $target, $column) {
+  connectToMySQL();
   $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . "%';";
   $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
   if (mysql_num_rows($result) == 1) {
@@ -22,14 +23,17 @@ function removeToken($user, $target, $column) {
   }
   else {
     mysql_free_result($result);
+    mysql_close();
     return false;
   }
   mysql_free_result($result);
+  mysql_close();
   return true;
 }
 
 
 function storeToken($user, $target, $token, $column) {
+  connectToMySQL();
   $query = "UPDATE users SET " . $column . " = concat(" . $column . ", '" . mysql_real_escape_string($target) . "-" . $token . ",') WHERE username = '" . mysql_real_escape_string($user) . "';";
   $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
   if (mysql_affected_rows() != 1) {
@@ -37,10 +41,12 @@ function storeToken($user, $target, $token, $column) {
     writetolog("Error: User not found: " . $user);
     die400("Error: User not found: " . $user);
   }
+  mysql_close();
 }
 
 
 function markTokenValid($user, $target, $column) {
+  connectToMySQL();
   $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . "%';";
   $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
   if (mysql_num_rows($result) == 1) {
@@ -57,26 +63,73 @@ function markTokenValid($user, $target, $column) {
   else {
     // Could not find $target in $column of user $user
     mysql_free_result($result);
+    mysql_close();
     return false;
   }
   mysql_free_result($result);
+  mysql_close();
   return true;
 }
 
 
 function isKnown($user, $target, $column) {
-  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . "%';";
+  connectToMySQL();
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . ":%';";
   $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
   if (mysql_num_rows($result) == 1) {
     // is known
     mysql_free_result($result);
+    mysql_close();
     return true;
   }
   else {
     // Could not find $target in $column of user $user
     mysql_free_result($result);
+    mysql_close();
     return false;
   }
+}
+
+
+function getfriends($user_local) {
+  connectToMySQL();
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user_local) . "';";
+  $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
+  if (mysql_num_rows($result) == 1) {
+    $data = array();
+    $data_pending = array();
+    $data_incoming = array();
+    $row = mysql_fetch_array($result);
+    $friendsandtokens = explode(",", $row['friends']);
+    $i = 0; $j = 0;
+    foreach ($friendsandtokens as $friend) {
+      if (!empty($friend) && strrpos($friend, ":")) {
+        $data[$i] = substr($friend, 0, strrpos($friend, ":"));
+        $i++;
+      }
+      elseif (!empty($friend) && strrpos($friend, "-")) {
+        $data_incoming[$j] = substr($friend, 0, strrpos($friend, "-"));
+        $j++;
+      }
+    }
+    $incomingandtokens = explode(",", $row['authorized']);
+    $k = 0;
+    foreach ($incomingandtokens as $friend) {
+      if (!empty($friend) && strrpos($friend, "-")) {
+        $data_pending[$k] = substr($friend, 0, strrpos($friend, "-"));
+        $k++;
+      }
+    }
+  }
+  else {
+    mysql_free_result($result);
+    mysql_close();
+    die500("MySQL Error (SELECT): " . mysql_error());
+  }
+  mysql_free_result($result);
+
+  mysql_close();
+  return array($data, $data_pending, $data_incoming);
 }
 
 

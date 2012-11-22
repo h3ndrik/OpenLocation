@@ -32,6 +32,11 @@ function validateUserByToken($user, $token) {
 }
 
 
+function validateUserDB() {
+  // TODO: move code from functions/http.php validateUser() here
+}
+
+
 /* Generates random string */
 function newtoken() {
   if(function_exists('openssl_random_pseudo_bytes')) return bin2hex(openssl_random_pseudo_bytes(16, $cstrong));
@@ -82,7 +87,6 @@ function sendrequestfriend($user_local, $target) {
   }
 
   /* Send requestfriend to $target */
-
   $url = "http://" . $target_domain . "/api.php";
   $req_json = json_encode(array("request" => "requestfriend", "sender" => $user_local . "@" . $_SERVER['HTTP_HOST'], "target" => $target_fullusername, "token" => $newtoken));
 
@@ -90,9 +94,9 @@ function sendrequestfriend($user_local, $target) {
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "requestfriend" && $result->{'error'} == "0") {
-    echo "<span style=\"color:#00C000\">Successfully requested friendship with user &quot;" . htmlspecialchars($target_local) . "&quot</span>\n";
+    return true;
     // TODO: only do local work if target response is ok
   }
-  else die ('Bad Answer: ' . $http_result);
+  else die ('{"request":"sendrequestfriend", "error":"sendrequestfriend(): requestfriend returned bad answer: ' . $http_result . '"}');
 }
 ?>

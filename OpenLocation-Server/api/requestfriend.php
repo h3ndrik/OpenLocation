@@ -17,10 +17,8 @@
   /* Check if authorized */
   // not necessary  // TODO: really?
 
-  connectToMySQL();
-
   /* Cancel if $sender is known as 'friends' */
-  if (isKnown($target_local, $sender, 'friends')) die({"request":"requestfriend", "error":"Is already a friend"});
+  if (isKnown($target_local, $sender, 'friends')) die('{"request":"requestfriend", "error":"Is already a friend"}');
 
   /* Temp store $token in 'friends', it authorizes me for $sender */
   storeToken($target_local, $sender, $token, 'friends');
@@ -33,8 +31,6 @@
 
   /* Done */
   writetolog("New friendship request: " . mysql_real_escape_string($sender) . "->" . mysql_real_escape_string($target));
-
-  mysql_close();
-
+//die('{"request":"requestfriend", "error":"test"}');
   echo base64_encode(gzdeflate('{"request":"requestfriend", "error":"0", "token":"' . $newtoken . '"}'));
 ?>
