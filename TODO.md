@@ -27,13 +27,14 @@ v0.3 (Alpha)
 
 v0.4 (Alpha)
 ------------
+- Move code into (self-contained?) libraries, eg. auth (PHP)
 - Remove 'die's, clean error handling (PHP)
 - every statement: mysql_real_escape_string, htmlspecialchars (PHP)
 - check for other security problems (eg injection, no auth) (PHP)
 - clean code, make sure functions are used (PHP)
 - don't make local http connections (PHP)
 - don't make blocking http requests (PHP)
-- Delete user (PHP)
+- give sane error messages, and display them properly (PHP)
 
 v0.5 (Alpha)
 -----------
@@ -46,6 +47,7 @@ v0.6 (Beta)
 -----------
 - Bugfix
 - Encryption (Android)
+- Delete user (PHP)
 
 
 v0.7 (Beta)
