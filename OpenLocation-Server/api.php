@@ -67,9 +67,17 @@ elseif (strcmp($request, 'removefriend') == 0) {
 }
 
 
+/* Handle request "deletelocation" */
+elseif (strcmp($request, 'deletelocation') == 0) {
+
+  require("api/deletelocation.php");
+
+}
+
+
 /* Could not handle $request */
 else {
-  die('{"request":"", "error":"API: Not implemented"}');
+  die('{"request":"", "error":"API: ' . $request . ' not implemented"}');
 }
 
 ?>

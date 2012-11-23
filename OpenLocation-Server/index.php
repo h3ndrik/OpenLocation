@@ -28,23 +28,30 @@ html, body, #map {
 }
  .button {
      /*basic styles*/ width: 120px; height: 45px;
-     color: #dfdfdf; background-color: #4f4f4f;
+     color: #4f4f4f; background-color: #ffffff;
      text-align: center; font-size: 30px; line-height: 45px;
-     /*gradient styles*/ background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4f4f4f), to(#1d1d1d)); background: -moz-linear-gradient(19% 75% 90deg,#1d1d1d, #4f4f4f);
+     /*gradient styles*/ background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#efefef)); background: -moz-linear-gradient(19% 75% 90deg,#efefef, #ffffff);
      /*border styles*/ border-top: solid 2px #8f8f8f; border-bottom: solid 2px #1a1a1a; border-left: solid 2px #4f4f4f; border-right: solid 2px #4f4f4f; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
-     /*position*/ position:absolute; bottom:16px; left:0px; z-index: 100;
+     /*position position:absolute; bottom:16px; left:0px; z-index: 100; */
  }
  .button p { 
       font-size: 30px; line-height: 70px; font-family: verdana, sans-serif; font-weight: bold; text-shadow: 0px 2px 3px #444;
  }
  .button a { text-decoration: none; color: fff; }
- .button:hover { background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#616161), to(#292929)); background: -moz-linear-gradient(19% 75% 90deg,#292929, #616161); border-top: solid 2px #8f8f8f; border-bottom: solid 2px #282828; }
- .button p:hover{ text-shadow: 0px 2px 3px #555; } 
+ .button:hover { background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#efefef), to(#cdcdcd)); background: -moz-linear-gradient(19% 75% 90deg,#cdcdcd, #efefef); border-top: solid 2px #8f8f8f; border-bottom: solid 2px #1a1a1a; }
+ .button p:hover{ text-shadow: 0px 2px 3px #555; }
+ #friends {
+  /*position*/ position:absolute; bottom:64px; right:0px; z-index: 100;
+ }
+ #status {
+  /*position*/ position:absolute; bottom:16px; right:0px; z-index: 100;
+ }
   </style>
 </head>
 <body>
   <div id="map"></div>
-  <a href="/friends.php"><div id="friends" class="button">Friends</div></a>
+  <a href="/friends.php"><div id="friends" class="button">&#9734;</div></a>
+  <a href="/status.php"><div id="status" class="button"><!--&#9998;-->&#9762;</div></a>
 
 <script type="text/javascript">
 <!--

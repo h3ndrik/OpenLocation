@@ -9,8 +9,6 @@ require_once('functions.php');
 /* HttpAuth */
 list ($user, $domain) = validateUser();
 
-makeHtmlHeader("Friends");
-
 /* Get own token */
 $token = getowntoken($user);
 
@@ -68,6 +66,17 @@ if (isset($_POST["sendrequestfriend"])) {
 
 
 
+
+
+
+
+
+/* Now the page */
+makeHtmlHeader("Friends");
+
+echo "<a href=\"/\"><center><h1>OpenLocation - " . $user . "</h1></center></a>";
+echo "<hr />";
+
 /* Request list of friends */
 $url = "http://" . $domain . "/api.php";
 $req_json = json_encode(array("request" => "getfriends", "sender" => $user, "token" => $token));
@@ -88,6 +97,8 @@ if (count($rows) > 0) {
 }
 else echo "<p>none</p>\n";
 
+echo "<hr />\n";
+
 if (isset($result->{'pending'})) $rows = $result->{'pending'};
 else $rows = null;
 
@@ -96,6 +107,7 @@ if (count($rows) > 0) {
   for ($i=0; $i<count($rows); $i++) {
     echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\">" . $rows[$i] . " <input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
   }
+  echo "<hr />\n";
 }
 
 if (isset($result->{'incoming'})) $rows = $result->{'incoming'};
@@ -106,12 +118,16 @@ if (count($rows) > 0) {
   for ($i=0; $i<count($rows); $i++) {
     echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\">" . $rows[$i] . " <input type=\"hidden\" name=\"localrequestfriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"ACCEPT\" /></form><form action=\"\" method=\"POST\" style=\"display:inline;\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
   }
+  echo "<hr />\n";
 }
 
 echo "<form action=\"\" method=\"POST\">\n";
 echo "<p>Request friendship with: <input type=\"text\" name=\"sendrequestfriend\" /><input type=\"submit\" /></p>\n";
 echo "</form>\n";
 
+echo "<hr />\n";
+
+echo "<div align=\"right\"><a href=\"/\">back</a></div>\n";
 
 makeHtmlFooter();
 ?>
