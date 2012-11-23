@@ -69,7 +69,7 @@ function doBlockingHttpJsonRequest($url, $req_json) {
     // Server response is now stored in $http_result variable so you can process it
     //die("Success, got: " . $http_result);
 
-    $result = gzinflate(base64_decode($http_result));
+    $result = @gzinflate(base64_decode($http_result));
     if ($result != FALSE) return $result;
     else return $http_result;
 }

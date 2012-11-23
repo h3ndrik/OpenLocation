@@ -27,6 +27,7 @@ v0.3 (Alpha)
 
 v0.4 (Alpha)
 ------------
+- write error messages to serverlog everywhere(!) for debugging and testing (PHP)
 - Move code into (self-contained?) libraries, eg. auth (PHP)
 - Remove 'die's, clean error handling (PHP)
 - every statement: mysql_real_escape_string, htmlspecialchars (PHP)

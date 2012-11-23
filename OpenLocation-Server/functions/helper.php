@@ -1,13 +1,15 @@
 <?php
 /* Writes logfile when DEBUG and DEBUGFILE are set correctly */
 function writetolog($error) {
-  if (isset($DEBUG) && isset($DEBUGFILE) && strcmp($DEBUG, "yesdoit") == 0) {
-    $myFile = $DEBUGFILE;
-    $fh = fopen($myFile, 'a') or die500("FAILED");
-    $timestamp = time();
-    $stringData = "TIME: $timestamp, LOG: $error\n";
-    fwrite($fh, $stringData);
-    fclose($fh);
+  require_once('functions.php');
+  if (defined('DEBUG') && strcmp(DEBUG, "yesdoit") === 0 && defined('DEBUGFILE')) {
+    error_log($error);
+//    $myFile = DEBUGFILE;
+//    $fh = fopen($myFile, 'a') or die500("FAILED");
+//    $timestamp = time();
+//    $stringData = "TIME: $timestamp, LOG: $error\n";
+//    fwrite($fh, $stringData);
+//    fclose($fh);
   }
 }
 

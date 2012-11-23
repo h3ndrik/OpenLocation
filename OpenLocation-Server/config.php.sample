@@ -18,7 +18,7 @@ define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 
 /** write log output. WARNING this is a mayor security leak. DO NOT SET */
-define('DEBUG', '');
-define('DEBUGFILE', 'log.insertsomethingsecrethere.txt');
+//define('DEBUG', '');
+//define('DEBUGFILE', 'log.insertsomethingsecrethere.txt');
 
 ?>
