@@ -18,7 +18,7 @@ if (isset($_POST["deletelocation"])) {
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "deletelocation" && $result->{'error'}[0] === "0") {
-    echo "<span style=\"color:#00C000\">Successfully deleted locations in interval: &quot;" . htmlspecialchars($_POST["deletelocation"]) . "&quot</span>\n";
+    echo "<span style=\"color:#00C000\">Successfully deleted locations in interval: &quot;" . htmlspecialchars($_POST["deletelocation"]) . "&quot</span><br />\n<span style=\"color:#C0ß000\">Make sure to clean the cache of the App, as it may have locations in the upload queue. Also you may want to disable it.</span>\n";
   }
   else die ('Bad Answer: ' . $http_result);
 }

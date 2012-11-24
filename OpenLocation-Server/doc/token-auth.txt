@@ -1,0 +1,105 @@
+                       ################################
+                       # OpenLocation token auth v0.1 #
+                       ################################
+
+WARNING: This is a first draft (yet implemented) with serious limitations!
+Con:
+* Handshakes are only two way, leaving room for lost packages and undefined states of the process. We try to compensate for this by removing previous tokens. If in doubt, "delete friend"s on both sides to reset the process.
+* Tokens are exchanged in plaintext making it easy to eavesdrop the authorization secret.
+* No authentification is done. Making man-in-the-middle attacks possible.
+
+Pro:
+* decentral,
+* atomic actions,
+* accepting a friend is the same as sending a new request, users may each do a new request in contrast to the second one having to accept the request
+* easy(!?) implementation, only one send function and one api function
+
+Below is a 'graphical' representation of the whole process:
+
+
+##############################################################################
+            SENDER                                           TARGET
+##############################################################################
+
+ -----------database----------                  -----------database----------
+|  friends     |  authorized  |                |  friends     |  authorized  |
+|   -empty-    |    -empty-   |                |   -empty-    |    -empty-   |
+ -----------------------------                  -----------------------------
+
+##########################################
+# Sender wants to be friends with target #
+##########################################
+ ------------------------------------------
+| >sendfriendrequest<                      |
+|------------------------------------------|
+| * clear all targettokens 'authorized'    |
+| * generate new token token1              |
+| * send requestfriend to target           |
+| * store token1, authorizes me            |
+| * (if pending request, mark tokens valid)|
+ ------------------------------------------
+
+                    {requestfriend,sender,target,token1}
+                  ------------------------------------------>
+
+ -----------database----------                  -----------database----------
+|  friends     |  authorized  |                |  friends     |  authorized  |
+|   -empty-    | target-token1|                |   -empty-    |    -empty-   |
+
+##############################################################################
+
+
+                                       --------------------------------------
+                                      | >requestfriend<                      |
+                                      |--------------------------------------|
+                                      | * check if target exists             |
+                                      | * cancel if already authorized friend|
+                                      | * remove pending friends             |
+                                      | * temp store token1, friends         |
+                                      | * (if pending, mark tokens valid)    |
+                                       --------------------------------------
+
+ -----------database----------                  -----------database----------
+|  friends     |  authorized  |                |  friends     |  authorized  |
+|   -empty-    | target-token1|                |sender-token1 |    -empty-   |
+
+##############################################################################
+
+
+                                         #####################################
+                                         # target accepts sender as a friend #
+                                         #####################################
+                                            ---------------------------------
+                                           | >sendfriendrequest<             |
+                                           |---------------------------------
+                                           | - clear sendertokens authorized |
+                                           | - generate new token            |
+                                           | - store token, auth me          |
+                                           | - if pending, mark valid        |
+                                            ---------------------------------
+
+                     {requestfriend,target,sender,token2}
+                <------------------------------------------
+
+ -----------database----------                  -----------database----------
+|  friends     |  authorized  |                |  friends     |  authorized  |
+|   -empty-    | target-token1|                |sender:token1 | sender:token2|
+
+##############################################################################
+
+
+ --------------------------------------
+| >requestfriend<                      |
+|--------------------------------------|
+| * check if target exists             |
+| * cancel if already authorized friend|
+| * remove pending friends             |
+| * temp store token1, friends         |
+| * (if pending, mark tokens valid)    |
+ --------------------------------------
+
+ -----------database----------                  -----------database----------
+|  friends     |  authorized  |                |  friends     |  authorized  |
+|target:token2 | target:token1|                |sender:token1 | sender:token2|
+
+##############################################################################

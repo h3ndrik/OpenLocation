@@ -23,6 +23,9 @@
   /* Cancel if $sender is known as 'friends' */
   if (isKnown($target_local, $sender, 'friends', ':')) die('{"request":"requestfriend", "error":"Is already a friend"}');
 
+  /* clear all previous pending tokens 'friends' */
+  removeToken($user_local, $target_fullusername, 'friends', '-');
+
   /* Temp store $token in 'friends', it authorizes me for $sender */
   storeToken($target_local, $sender, $token, 'friends');
 

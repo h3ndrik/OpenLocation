@@ -98,7 +98,8 @@ function sendrequestfriend($user_local, $target) {
   list ($target_local, $target_domain, $target_fullusername) = explode_username($target);
 
   /* clear all previous tokens 'authorized' (going to generate new one) */
-  removeToken($user_local, $target_fullusername, 'authorized');
+  removeToken($user_local, $target_fullusername, 'authorized', ':');
+  removeToken($user_local, $target_fullusername, 'authorized', '-');
 
   /* generate new token authorizing target */
   $newtoken = newtoken();

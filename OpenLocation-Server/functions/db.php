@@ -6,16 +6,16 @@ function connectToMySQL() {
 }
 
 
-function removeToken($user, $target, $column) {
+function removeToken($user, $target, $column, $delimiter) {
   connectToMySQL();
-  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . "%';";
+  $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($user) . "' AND " . $column . " LIKE '%" . mysql_real_escape_string($target) . $delimiter . "%';";
   $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error());
   if (mysql_num_rows($result) == 1) {
     $data = array();
     $row = mysql_fetch_array($result);
     $usersandtokens = explode(",", $row[$column]);
     foreach ($usersandtokens as $singleuserandtoken) {
-      if (strpos($singleuserandtoken, $target) === 0) {
+      if (strpos($singleuserandtoken, $target . $delimiter) === 0) {
         $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . ",', '') WHERE username = '" . mysql_real_escape_string($user) . "';";
         $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
       }

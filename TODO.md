@@ -19,6 +19,9 @@ v0.3 (Alpha)
 -----------
 - fix back button (Android)
 - fix refresh (Android)
+- cleancache (Android)
+- upload on data connection becoming available (Android)
+- add circle for accuracy of position (PHP)
 - helper class for server api (Android)
 - Delete pref (Android)
 - Friends Activity (Android)
@@ -42,7 +45,7 @@ v0.5 (Alpha)
 - Bugfix
 - Mapsforge View (Android)
 - CSS (PHP)
-
+- add marker with popups to path (PHP)
 
 v0.6 (Beta)
 -----------
@@ -55,6 +58,7 @@ v0.7 (Beta)
 -----------
 - Bugfix
 - Server2Server Encryption (PHP)
+- store hash of password (PHP & Android)
 
 v0.8 (Beta)
 -----------
@@ -74,7 +78,7 @@ later
 -----
 - Remove location jitter
 - Fake position
+- Fragments UI
 - see [android-sdk/samples/SampleSyncAdapter]
 - replace Credentials in SharedPreferences with AccountManager (Android) [http://developer.android.com/reference/android/accounts/AccountManager.html]
 - implement OAuth2 (Android) [http://developer.android.com/training/id-auth/authenticate.html]
-

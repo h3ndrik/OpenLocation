@@ -16,13 +16,13 @@
   $error="0";
 
   /* Remove from own authorized */
-  if (removeToken($user_local, $target, "authorized")) {
+  if (removeToken($user_local, $target, 'authorized', '')) {
     writetolog("Removed friendship authorization: " . $sender . "->" . $target);
   }
   else $error .= ' (Was not authorized)';
 
   /* Remove from own friends */
-  if (removeToken($user_local, $target, "friends")) {
+  if (removeToken($user_local, $target, 'friends', '')) {
     writetolog("Removed friend: " . $sender . "->" . $target);
   }
   else $error .= ' (Was not a friend)';
