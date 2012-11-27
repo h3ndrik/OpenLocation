@@ -20,6 +20,7 @@ v0.2 (Alpha)
 - correctly handle nested sql results (replace wiht $result1 $result2...?) (PHP) *done*
 - Datenschutzerklärung & Info (PHP) *done*
 - don't save passwords in plaintext (PHP) *done*
+- fix token handling for usernames with ':' and '-' (strrpos) (PHP)
 
 v0.3 (Alpha)
 -----------
@@ -57,6 +58,7 @@ v0.5 (Alpha)
 v0.6 (Beta)
 -----------
 - Bugfix
+- implement openlovcation auth 0.2
 - Encryption (Android)
 - Delete user (PHP)
 
