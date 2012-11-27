@@ -139,7 +139,7 @@ public class OpenLocationMainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_refresh:
-			Utils.startReceiver(getBaseContext(), true);  //TODO: send intent to broadcast receiver
+			Utils.startReceiver(getBaseContext(), true);  // Trigger an update
 			webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");
 			break;
 		case R.id.menu_settings:
@@ -196,8 +196,8 @@ public class OpenLocationMainActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		// webview.onResume();
-		//TODO: send intent to broadcast receiver
-		OpenLocationMainActivity.this.webview.reload();
+		Utils.startReceiver(getBaseContext(), true);  // Trigger an update
+		if (webview != null) webview.reload();
 		//OpenLocationMainActivity.this.webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");  // does reload() work?
 	}
 }
