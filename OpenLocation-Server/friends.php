@@ -53,7 +53,7 @@ if (isset($_POST["sendrequestfriend"])) {
     echo "<span style=\"color:#C00000\">User &quot;" . htmlspecialchars($target_fullusername) . "&quot does not exist</span>\n";
   }
   elseif ($result != null && $result->{'request'} == "sendrequestfriend" && $result->{'error'} == "Is already a friend") {
-    echo "<span style=\"color:#C00000\">User &quot;" . htmlspecialchars($target_fullusername) . "&quot is already a friend</span>\n";
+    echo "<span style=\"color:#C00000\">You are currently a friend of &quot;" . htmlspecialchars($target_fullusername) . "&quot. Ask him/her to remove friendship with you before re-applying for friendship.</span>\n";
   }
   else die ('Bad Answer: ' . $http_result);
 }

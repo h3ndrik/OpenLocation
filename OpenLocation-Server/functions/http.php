@@ -166,7 +166,8 @@ $result = mysql_query($query) or die500("MySQL Error (SELECT *): " . mysql_error
 if (mysql_num_rows($result) == 1) {
   $row = mysql_fetch_object($result);
   // Benutzer => Passwort
-  $benutzer = array(mysql_real_escape_string($daten['username']) => $row->password);
+  $password = $row->password;
+  $password_fullusername = $row->password_fullusername;
   mysql_free_result($result);
   mysql_close();
 }
@@ -181,14 +182,17 @@ else {
 //    !isset($benutzer[$daten['username']]))
 
 // Erzeugen einer gültigen Antwort
-$A1 = md5($daten['username'] . ':' . $realm . ':' .
-          $benutzer[$daten['username']]);
+//$A1 = md5($daten['username'] . ':' . $realm . ':' .
+//          $benutzer[$daten['username']]);
 $A2 = md5($_SERVER['REQUEST_METHOD'] . ':' . $daten['uri']);
-$gueltige_antwort = md5($A1 . ':' . $daten['nonce'] . ':' . $daten['nc'] .
+$gueltige_antwort = md5($password . ':' . $daten['nonce'] . ':' . $daten['nc'] .
+                        ':' . $daten['cnonce'] . ':' . $daten['qop'] . ':' .
+                        $A2);
+$gueltige_antwort2 = md5($password_fullusername . ':' . $daten['nonce'] . ':' . $daten['nc'] .
                         ':' . $daten['cnonce'] . ':' . $daten['qop'] . ':' .
                         $A2);
 
-if ($daten['response'] != $gueltige_antwort)  {
+if ($daten['response'] != $gueltige_antwort && $daten['response'] != $gueltige_antwort2)  {
   send401Header($realm);
   echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
   writetolog("Error: Falsche Zugangsdaten");

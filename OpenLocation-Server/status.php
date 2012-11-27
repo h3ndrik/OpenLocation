@@ -121,6 +121,12 @@ echo "</form>\n";
 
 echo "<hr />\n";
 
+echo "<form action=\"/info.php\" method=\"GET\">\n";
+echo "<p>Info &amp; Datenschutzerkl&auml;rung <input type=\"hidden\" name=\"info\" value=\"true\" /><input type=\"submit\" value=\"Info\" /></p>\n";
+echo "</form>\n";
+
+echo "<hr />\n";
+
 echo "<div align=\"right\"><a href=\"/\">back</a></div>\n";
 
 makeHtmlFooter();

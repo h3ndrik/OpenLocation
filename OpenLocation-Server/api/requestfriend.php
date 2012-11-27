@@ -24,7 +24,7 @@
   if (isKnown($target_local, $sender, 'friends', ':')) die('{"request":"requestfriend", "error":"Is already a friend"}');
 
   /* clear all previous pending tokens 'friends' */
-  removeToken($user_local, $target_fullusername, 'friends', '-');
+  removeToken($target_local, $sender, 'friends', '-');
 
   /* Temp store $token in 'friends', it authorizes me for $sender */
   storeToken($target_local, $sender, $token, 'friends');
@@ -36,7 +36,7 @@
   }
 
   /* Done */
-  writetolog("New friendship request: " . mysql_real_escape_string($sender) . "->" . mysql_real_escape_string($target));
+  writetolog("New friendship request: " . $sender . "->" . $target);
 //die('{"request":"requestfriend", "error":"test"}');
-  echo base64_encode(gzdeflate('{"request":"requestfriend", "error":"0", "token":"' . $newtoken . '"}'));
+  echo base64_encode(gzdeflate('{"request":"requestfriend", "error":"0", "token":"' . $token . '"}'));
 ?>

@@ -50,7 +50,7 @@ html, body, #map {
 
 <script type="text/javascript">
 <!--
-var map = L.map('map'); //.setView([51.513, 7.46], 10);
+var map = L.map('map').setView([51.513, 7.46], 9);
 L.tileLayer('http://{s}.tile.cloudmade.com/3941788bcb3747e18763298b5ba22953/997/256/{z}/{x}/{y}.png', {
     //attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="http://cloudmade.com">CloudMade</a>',
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
@@ -159,7 +159,7 @@ map.on('locationerror', onLocationError);
     echo 'var marker_' . $user . ' = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
     echo '    .bindPopup("' . $user . ', ' . elapsed_time(intval($row->time / 1000)) . '");' . "\n\n";
 
-    echo "map.setView([" . $setview['latitude'] . ", " . $setview['longitude'] . "], 14);\n";
+    echo "map.setView([" . $setview['latitude'] . ", " . $setview['longitude'] . "], 13);\n";
 
     echo "marker_" . $setview['name'] . ".openPopup();";    // setView before marker.openPopup(), otherwise it will be closed immediately
 
@@ -167,7 +167,7 @@ map.on('locationerror', onLocationError);
   }
   else {
     mysql_free_result($result);
-    die('map.setView([51.513, 7.46], 10);</script>Nothing found.</body></html>');
+    die('map.setView([51.513, 7.46], 9);</script>Nothing found.</body></html>');
   }
 
   mysql_close();

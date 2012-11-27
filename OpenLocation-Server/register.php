@@ -12,6 +12,7 @@ function displayForm() {
 
 makeHtmlHeader('Register User');
 echo "<strong>OpenLocation - Register new user on " . $_SERVER['HTTP_HOST'] . "</strong>\n\n";
+echo "<p><span style=\"color:#C00000\">WARNING: This is alpha software. Encryption is not implemented (yet) and there may be major bugs. Your data is not safe in any way. Use it at your own risk.</span></p>";
 
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
@@ -35,15 +36,19 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
   }
   else {
     connectToMySQL();
-    $query = "CREATE TABLE IF NOT EXISTS users(username varchar(255), password varchar(32), token TEXT, friends TEXT, authorized TEXT, PRIMARY KEY (username));";
+    $query = "CREATE TABLE IF NOT EXISTS users(username varchar(255), password varchar(32), password_fullusername varchar(32), token TEXT, friends TEXT, authorized TEXT, PRIMARY KEY (username));";
     $result = mysql_query($query) or die("Unable to create table: " . mysql_error());
     $local = substr($_POST["username"], 0, strrpos($_POST["username"], "@"));
+    $realm = 'OpenLocation';
     $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($local) . "';";
     $result = mysql_query($query) or die("MySQL Error (SELECT *): " . mysql_error());
     if (mysql_num_rows($result) == 0) {
       mysql_free_result($result);
-      $query = "INSERT INTO users VALUES('" . mysql_real_escape_string($local) . "', '" . mysql_real_escape_string($_POST['password']) . "', '" . newtoken() . "', '', '');";
+      $password = md5(mysql_real_escape_string($local) . ':' . $realm . ':' . mysql_real_escape_string($_POST['password']));
+      $password_fullusername = md5(mysql_real_escape_string($local) . '@' . $_SERVER['HTTP_HOST'] . ':' . $realm . ':' . mysql_real_escape_string($_POST['password']));
+      $query = "INSERT INTO users VALUES('" . mysql_real_escape_string($local) . "', '" . mysql_real_escape_string($password) . "', '" . mysql_real_escape_string($password_fullusername) . "', '" . newtoken() . "', '', '');";
       $result = mysql_query($query) or die("MySQL Error (INSERT): " . mysql_error());
+      // TODO: remove table if exists
       $query = "CREATE TABLE IF NOT EXISTS `" . mysql_real_escape_string($local) . "`(time BIGINT, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, accuracy FLOAT, speed FLOAT, bearing FLOAT, provider varchar(16), ip char(16), PRIMARY KEY (time));";
       $result = mysql_query($query) or die("Unable to create table: " . mysql_error());
       echo '<span style="color:#00C000">Successfully created user &quot;' . htmlspecialchars($local) . '@' . $_SERVER['HTTP_HOST'] . '&quot;</span>';

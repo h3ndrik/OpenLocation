@@ -14,13 +14,18 @@ v0.2 (Alpha)
 - Status page (PHP) *done, but ugly*
 - Delete locations - interval (PHP) *done, awaiting bugs*
 - Delete locations - all (PHP) *done, not tested*
+- fix back button (Android) *done*
+- fix refresh (Android) *done?*
+- upload on data connection becoming available (Android) *done?*
+- correctly handle nested sql results (replace wiht $result1 $result2...?) (PHP) *done*
+- Datenschutzerklärung & Info (PHP) *done*
+- don't save passwords in plaintext (PHP) *done*
 
 v0.3 (Alpha)
 -----------
-- fix back button (Android) *done*
-- fix refresh (Android) *done?*
+
 - cleancache (Android)
-- upload on data connection becoming available (Android) *done?*
+- clear auth data in webview when credentials change (Android)
 - add circle for accuracy of position (PHP)
 - helper class for server api (Android)
 - Delete pref (Android)
@@ -33,13 +38,13 @@ v0.4 (Alpha)
 - write error messages to serverlog everywhere(!) for debugging and testing (PHP)
 - Move code into (self-contained?) libraries, eg. auth (PHP)
 - Remove 'die's, clean error handling (PHP)
-- correctly handle nested sql results (replace wiht $result1 $result2...?) (PHP) *done*
 - every statement: mysql_real_escape_string, htmlspecialchars (PHP)
 - check for other security problems (eg injection, no auth) (PHP)
 - clean code, make sure functions are used (PHP)
 - don't make local http connections (PHP)
 - don't make blocking http requests (PHP)
 - give sane error messages, and display them properly (PHP)
+- implement all remaining TODOs from code
 
 v0.5 (Alpha)
 -----------
@@ -47,6 +52,7 @@ v0.5 (Alpha)
 - Mapsforge View (Android)
 - CSS (PHP)
 - add marker with popups to path (PHP)
+- translate backend (PHP)
 
 v0.6 (Beta)
 -----------
