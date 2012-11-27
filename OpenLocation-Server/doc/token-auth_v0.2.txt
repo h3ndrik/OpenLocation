@@ -1,0 +1,13 @@
+encrypt locations with locationmasterkey
+encrypt locationmasterkey with friendkeys
+
+implement 3-way handshake with qr-codes and fallback
+
+
+verify client
+verify server
+encrypt user entry/credentials
+encrypt send locations
+
+client_read_key
+client_write_key

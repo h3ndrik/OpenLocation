@@ -14,6 +14,7 @@ v0.2 (Alpha)
 - Status page (PHP) *done, but ugly*
 - Delete locations - interval (PHP) *done, awaiting bugs*
 - Delete locations - all (PHP) *done, not tested*
+- fix token handling for usernames with ':' and '-' (strrpos) (PHP)
 
 v0.3 (Alpha)
 -----------
@@ -50,6 +51,7 @@ v0.5 (Alpha)
 v0.6 (Beta)
 -----------
 - Bugfix
+- implement openlovcation auth 0.2
 - Encryption (Android)
 - Delete user (PHP)
 
