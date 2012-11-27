@@ -17,7 +17,7 @@ v0.2 (Alpha)
 
 v0.3 (Alpha)
 -----------
-- fix back button (Android) *done?*
+- fix back button (Android) *done*
 - fix refresh (Android) *done?*
 - cleancache (Android)
 - upload on data connection becoming available (Android) *done?*
@@ -33,6 +33,7 @@ v0.4 (Alpha)
 - write error messages to serverlog everywhere(!) for debugging and testing (PHP)
 - Move code into (self-contained?) libraries, eg. auth (PHP)
 - Remove 'die's, clean error handling (PHP)
+- correctly handle nested sql results (replace wiht $result1 $result2...?) (PHP) *done*
 - every statement: mysql_real_escape_string, htmlspecialchars (PHP)
 - check for other security problems (eg injection, no auth) (PHP)
 - clean code, make sure functions are used (PHP)

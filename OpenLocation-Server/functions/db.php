@@ -17,7 +17,7 @@ function removeToken($user, $target, $column, $delimiter) {
     foreach ($usersandtokens as $singleuserandtoken) {
       if (strpos($singleuserandtoken, $target . $delimiter) === 0) {
         $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . ",', '') WHERE username = '" . mysql_real_escape_string($user) . "';";
-        $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
+        $result2 = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
       }
     }
   }
@@ -56,7 +56,7 @@ function markTokenValid($user, $target, $column) {
       if (strpos($singleuserandtoken, $target) === 0) {
         $updateduserandtoken = str_replace("-", ":", $singleuserandtoken);
         $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . "', '" . $updateduserandtoken . "') WHERE username = '" . mysql_real_escape_string($user) . "';";
-        $result = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
+        $result2 = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
       }
     }
   }
