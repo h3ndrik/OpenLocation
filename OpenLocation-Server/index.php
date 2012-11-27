@@ -90,7 +90,7 @@ map.on('locationerror', onLocationError);
 
     // request json from remote
     $url = "http://" . $friend_domain . "/api.php";
-    $req_json = json_encode(array("request" => "getlocation", "sender" => $user . "@" . $domain, "user" => $friend_local, "auth" => $friend_auth, "starttime" => (string)(time()*1000-86400000), "endtime" => (string)(time()*1000)));
+    $req_json = json_encode(array("request" => "getlocation", "sender" => $user . "@" . $domain, "user" => $friend_local, "auth" => $friend_auth, "starttime" => (string)(time()*1000-28800000), "endtime" => (string)(time()*1000)));
     //$req_json = base64_encode(gzdeflate(json_encode(array("request" => "getlocationdata", "sender" => mysql_real_escape_string($user . "@" . $domain), "user" => mysql_real_escape_string($friend_local), "auth" => $friend_auth))));
 
     $http_result = doBlockingHttpJsonRequest($url, $req_json);
@@ -126,7 +126,8 @@ map.on('locationerror', onLocationError);
       echo "], {color: 'green'}).addTo(map);\n";
 
       echo 'var marker_' . $friend_local . ' = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
-      echo '    .bindPopup("' . $friend_local . ', ' . elapsed_time(intval($row->time / 1000)) . '");' . "\n\n";
+      echo '    .bindPopup("' . $friend_local . ', ' . elapsed_time(intval($row->time / 1000)) . '");' . "\n";
+      echo 'var radius_' . $friend_local . ' = L.circle([' . $row->latitude . ', ' . $row->longitude . '], ' . $row->accuracy . ', {color: \'green\', opacity: 0.2, fillOpacity: 0.1}).addTo(map);' . "\n\n";
 
       if(isset($_GET['friend']) && $_GET['friend'] == $friend) {
         $setview = array("name" => $friend_local, "latitude" => $row->latitude, "longitude" => $row->longitude);
@@ -157,7 +158,8 @@ map.on('locationerror', onLocationError);
     }
 
     echo 'var marker_' . $user . ' = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
-    echo '    .bindPopup("' . $user . ', ' . elapsed_time(intval($row->time / 1000)) . '");' . "\n\n";
+    echo '    .bindPopup("' . $user . ', ' . elapsed_time(intval($row->time / 1000)) . '");' . "\n";
+    echo 'var radius_' . $user . ' = L.circle([' . $row->latitude . ', ' . $row->longitude . '], ' . $row->accuracy . ', {color: \'red\', opacity: 0.2, fillOpacity: 0.1}).addTo(map);' . "\n\n";
 
     echo "map.setView([" . $setview['latitude'] . ", " . $setview['longitude'] . "], 13);\n";
 
