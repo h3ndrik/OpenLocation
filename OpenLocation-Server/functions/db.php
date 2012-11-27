@@ -54,7 +54,8 @@ function markTokenValid($user, $target, $column) {
     $usersandtokens = explode(",", $row[$column]);
     foreach ($usersandtokens as $singleuserandtoken) {  // TODO: there should be only one token, invalidate all previous!!!
       if (strpos($singleuserandtoken, $target) === 0) {
-        $updateduserandtoken = str_replace("-", ":", $singleuserandtoken);
+        $updateduserandtoken = $singleuserandtoken;
+        $updateduserandtoken[strrpos($username, "-")] = ":";  // TODO: take fixed char (token is 32 char long)
         $query = "UPDATE users SET " . $column . " = REPLACE(" . $column . ", '" . $singleuserandtoken . "', '" . $updateduserandtoken . "') WHERE username = '" . mysql_real_escape_string($user) . "';";
         $result2 = mysql_query($query) or die500("MySQL Error (UPDATE): " . mysql_error());
       }
