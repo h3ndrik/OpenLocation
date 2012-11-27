@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
       $query = "INSERT INTO users VALUES('" . mysql_real_escape_string($local) . "', '" . mysql_real_escape_string($password) . "', '" . mysql_real_escape_string($password_fullusername) . "', '" . newtoken() . "', '', '');";
       $result = mysql_query($query) or die("MySQL Error (INSERT): " . mysql_error());
       // TODO: remove table if exists
-      $query = "CREATE TABLE IF NOT EXISTS `" . mysql_real_escape_string($local) . "`(time BIGINT, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, accuracy FLOAT, speed FLOAT, bearing FLOAT, provider varchar(16), ip char(16), PRIMARY KEY (time));";
+      $query = "CREATE TABLE IF NOT EXISTS `" . mysql_real_escape_string($local) . "`(time BIGINT, latitude DOUBLE, longitude DOUBLE, altitude DOUBLE, accuracy FLOAT, speed FLOAT, bearing FLOAT, provider varchar(16), ip char(16), version INT, PRIMARY KEY (time));";
       $result = mysql_query($query) or die("Unable to create table: " . mysql_error());
       echo '<span style="color:#00C000">Successfully created user &quot;' . htmlspecialchars($local) . '@' . $_SERVER['HTTP_HOST'] . '&quot;</span>';
       echo '<p>Please remember to log in with full name.</p>';
