@@ -5,7 +5,7 @@
     
     <string name="menu_refresh">Aktualisieren</string>
     <string name="menu_settings">Einstellungen</string>
-    <string name="menu_exit">Beenden</string>
+    <string name="menu_exit">Deaktivieren</string>
     
     <string name="pref_cat_username">Login Details</string>
     <string name="pref_cat_username_summary">Benutzername und Passwort</string>

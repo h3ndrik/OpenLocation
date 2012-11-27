@@ -159,6 +159,14 @@ public class OpenLocationMainActivity extends Activity {
 		return false;
 	}
 	
+	@Override
+	public void onBackPressed() {
+		if (webview != null && webview.canGoBack())
+			webview.goBack();
+		else
+			super.onBackPressed();
+	}
+	
 	public static void clearWebviewCache(Context context) {
 		if (webview != null) {
 			// TODO: This does not work
@@ -189,6 +197,7 @@ public class OpenLocationMainActivity extends Activity {
 		super.onResume();
 		// webview.onResume();
 		//TODO: send intent to broadcast receiver
-		OpenLocationMainActivity.this.webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");
+		OpenLocationMainActivity.this.webview.reload();
+		//OpenLocationMainActivity.this.webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");  // does reload() work?
 	}
 }

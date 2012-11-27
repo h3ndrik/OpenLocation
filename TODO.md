@@ -17,10 +17,10 @@ v0.2 (Alpha)
 
 v0.3 (Alpha)
 -----------
-- fix back button (Android)
-- fix refresh (Android)
+- fix back button (Android) *done?*
+- fix refresh (Android) *done?*
 - cleancache (Android)
-- upload on data connection becoming available (Android)
+- upload on data connection becoming available (Android) *done?*
 - add circle for accuracy of position (PHP)
 - helper class for server api (Android)
 - Delete pref (Android)

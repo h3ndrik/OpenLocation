@@ -7,9 +7,11 @@ import java.util.zip.Deflater;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -37,13 +39,18 @@ public class Utils { // TODO: Rename class?
 				.getSystemService(Context.LOCATION_SERVICE);
 		AlarmManager alarmManager = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
+		PackageManager pm = context.getPackageManager();
+		ComponentName updateReceiver = new ComponentName(context, UpdateReceiver.class);
+		ComponentName locationReceiver = new ComponentName(context, LocationReceiver.class);
 
 		if (SP.getBoolean("activate", false)) {
+			pm.setComponentEnabledSetting(updateReceiver, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+			pm.setComponentEnabledSetting(locationReceiver, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
 			locationManager.requestLocationUpdates(
 					LocationManager.PASSIVE_PROVIDER, 0, 0, pendingLocationIntent);
 			alarmManager.setInexactRepeating(
 					AlarmManager.ELAPSED_REALTIME_WAKEUP,
-					SystemClock.elapsedRealtime() + 300000l,
+					SystemClock.elapsedRealtime() + 90000l,
 					AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingUpdateIntent);
 			// alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 			// SystemClock.elapsedRealtime() + 15000l, 15000l, pendingIntent);
@@ -52,6 +59,8 @@ public class Utils { // TODO: Rename class?
 		} else {
 			locationManager.removeUpdates(pendingLocationIntent);
 			alarmManager.cancel(pendingUpdateIntent);
+			pm.setComponentEnabledSetting(updateReceiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+			pm.setComponentEnabledSetting(locationReceiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 		}
 	}
 
@@ -67,9 +76,14 @@ public class Utils { // TODO: Rename class?
 		updateIntent.setAction("de.h3ndrik.openlocation.update");
 		PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
+		PackageManager pm = context.getPackageManager();
+		ComponentName updateReceiver = new ComponentName(context, UpdateReceiver.class);
+		ComponentName locationReceiver = new ComponentName(context, LocationReceiver.class);
 		AlarmManager alarmManager = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 		alarmManager.cancel(pendingUpdateIntent);
+		pm.setComponentEnabledSetting(updateReceiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+		pm.setComponentEnabledSetting(locationReceiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 	}
 	
 	public static byte[] gzdeflate(final byte[] uncompressed) {

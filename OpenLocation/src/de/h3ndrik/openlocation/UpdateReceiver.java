@@ -58,6 +58,12 @@ public class UpdateReceiver extends BroadcastReceiver {
 			// as we got called by an inexact alarm which (hopefully) triggers when data connection
 			// is active anyway. hence we should use the connection asap. Ref says radio stays alive for 6/20 sec after each request! 
 		}
+		else if (intent.getAction() != null && intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
+			Log.d(DEBUG_TAG, "Network change");
+			if (((NetworkInfo)intent.getExtras().get(ConnectivityManager.EXTRA_EXTRA_INFO)).getState() == NetworkInfo.State.CONNECTED) {
+				sendToServer(context);
+			}
+		}
 		else {
 			Log.d(DEBUG_TAG, "Not sure who sent this Broadcast");
 		}

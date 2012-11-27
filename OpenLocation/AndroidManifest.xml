@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.h3ndrik.openlocation"
-    android:versionCode="21"
+    android:versionCode="22"
     android:versionName="0.1" >
 
     <uses-sdk
@@ -45,6 +45,9 @@
             android:name="de.h3ndrik.openlocation.UpdateReceiver"
             android:enabled="true"
             android:exported="true" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
         </receiver>
         <receiver
             android:name="de.h3ndrik.openlocation.StartupReceiver"
