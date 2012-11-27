@@ -7,7 +7,7 @@ Track your position / Where are your friends?
 Description
 --------------------------------------
 Track your position / Where are your friends?
-OpenLocation peroidically sends the location of your android-phone to a webserver. Both client and server are open source and you can host the database which contains all your previous locations on your own server.
+OpenLocation periodically sends the location of your android-phone to a web-server. Both client and server are open source so you can host the database (which contains all your previous locations) on your own server.
 Sample server on: http://location.h3ndrik.de
 
 
