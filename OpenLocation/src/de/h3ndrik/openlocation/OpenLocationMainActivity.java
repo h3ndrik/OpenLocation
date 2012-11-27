@@ -139,8 +139,8 @@ public class OpenLocationMainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_refresh:
-			//TODO: send intent to broadcast receiver
-			OpenLocationMainActivity.this.webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");
+			Utils.startReceiver(getBaseContext(), true);  //TODO: send intent to broadcast receiver
+			webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");
 			break;
 		case R.id.menu_settings:
 			Intent intent = new Intent(OpenLocationMainActivity.this,
@@ -161,7 +161,7 @@ public class OpenLocationMainActivity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-		if (webview != null && webview.canGoBack())
+		if (webview != null && webview.canGoBack() && !webview.getUrl().equals("http://" + Utils.getDomain(getBaseContext()) + "/"))
 			webview.goBack();
 		else
 			super.onBackPressed();

@@ -159,7 +159,7 @@ map.on('locationerror', onLocationError);
     echo 'var marker_' . $user . ' = L.marker([' . $row->latitude . ', ' . $row->longitude . ']).addTo(map)' . "\n";
     echo '    .bindPopup("' . $user . ', ' . elapsed_time(intval($row->time / 1000)) . '");' . "\n\n";
 
-    echo "map.setView([" . $setview['latitude'] . ", " . $setview['longitude'] . "], 15);\n";
+    echo "map.setView([" . $setview['latitude'] . ", " . $setview['longitude'] . "], 14);\n";
 
     echo "marker_" . $setview['name'] . ".openPopup();";    // setView before marker.openPopup(), otherwise it will be closed immediately
 
