@@ -22,10 +22,10 @@ v0.2 (Alpha)
 - don't save passwords in plaintext (PHP) *done*
 - fix token handling for usernames with ':' and '-' (strrpos) (PHP) *done?*
 - add circle for accuracy of position (PHP) *done?*
+- make sure updates are only done once (Android) *done?*
 
 v0.3 (Alpha)
 -----------
-- make sure updates are only done once (Android)
 - clean locationcache (Android)
 - clear auth data in webview when credentials change (Android)
 - helper class for server api (Android)

@@ -35,8 +35,6 @@ public class OpenLocationMainActivity extends Activity {
 		getWindow().requestFeature(Window.FEATURE_PROGRESS);
 		// setContentView(R.layout.activity_open_location_main);
 
-		Utils.startReceiver(getBaseContext(), true);
-
 		// WebView
 		webview = new WebView(this);
 		Log.d("WebView", "new WebView");
@@ -125,8 +123,8 @@ public class OpenLocationMainActivity extends Activity {
 		});
 
 		setContentView(webview);
-		Log.d("WebView", "loading url");
-		webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");
+		
+		// will load in onResume
 	}
 
 	@Override
@@ -184,7 +182,8 @@ public class OpenLocationMainActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		// webview.onPause();
+		webview.pauseTimers();
+		//if(Build.VERSION.SDK_INT >= 11) webview.onPause();
 	}
 
 	/*
@@ -195,9 +194,14 @@ public class OpenLocationMainActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// webview.onResume();
 		Utils.startReceiver(getBaseContext(), true);  // Trigger an update
-		if (webview != null) webview.reload();
+		webview.resumeTimers();
+		//if(Build.VERSION.SDK_INT >= 11) webview.onResume();
+		if (webview.getOriginalUrl() == null) {
+			Log.d("WebView", "loading url");
+			webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");
+		}
+		else if (webview.getOriginalUrl().equals("http://" + Utils.getDomain(getBaseContext()) + "/")) webview.reload();
 		//OpenLocationMainActivity.this.webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");  // does reload() work?
 	}
 }

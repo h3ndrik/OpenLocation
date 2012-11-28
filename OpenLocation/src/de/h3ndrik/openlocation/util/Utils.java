@@ -46,10 +46,8 @@ public class Utils { // TODO: Rename class?
 		if (SP.getBoolean("activate", false)) {
 			pm.setComponentEnabledSetting(updateReceiver, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
 			pm.setComponentEnabledSetting(locationReceiver, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
-			locationManager.removeUpdates(pendingLocationIntent);
 			locationManager.requestLocationUpdates(
 					LocationManager.PASSIVE_PROVIDER, 0, 0, pendingLocationIntent);
-			alarmManager.cancel(pendingUpdateIntent);
 			alarmManager.setInexactRepeating(
 					AlarmManager.ELAPSED_REALTIME_WAKEUP,
 					SystemClock.elapsedRealtime() + 90000l,
