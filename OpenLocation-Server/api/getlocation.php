@@ -23,7 +23,7 @@
   if (mysql_num_rows($result) != 1) {
     mysql_free_result($result);
     mysql_close();
-    writetolog("Error (getlocationdata): Not Authorized: " . mysql_real_escape_string($user));
+    writetolog("Error (getlocationdata): Not Authorized: " . $user);
     die('{"request":"location", "error":"Not Authorized"}');
   }
   mysql_free_result($result);
