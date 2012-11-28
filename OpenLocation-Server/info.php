@@ -1,9 +1,8 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html><head><title>OpenLocation - Info</title>
-<link rel="stylesheet" type="text/css" href="style.css" />
-</head>
-<body>
-<p><h1>OpenLocation</h1>
+<?php
+require_once('functions.php');
+
+makeHtmlHeader("About OpenLocation");
+?>
 <strong>Track your position / Where are your friends?</strong>
 <address>(c) 2012 h3ndrik</address></p>
 
@@ -17,13 +16,13 @@
 Wenn sie sicher sein wollen, verwenden sie diese Software erst, wenn dieser Hinweis entfernt wird.<br />
 Stellen sie weiterhin bitte sicher, dass sie dem Betreiber ihres Servers vertrauen, da er Daten auslesen oder manipulieren kann!</div></p>
 <p><h3>Verarbeitete Informationen</h3>
-Dieser Service soll Standorddaten von Ihrem Telefon sammeln und aufbereiten. Dazu wird st&auml;ndig (wenn aktiviert) jede festgestellte Position des Telefons aufbereitet, zwischengespeichert und in regelm&auml;&szlig;igen Abst&auml;nden an den eingetragenen Server &uuml;bermittelt. Der Server speichert die Positionsdaten zusammen mit einem Zeitstempel und der IP-Adresse des Ger&auml;tes - dauerhaft - in einer Datenbank.<br />
+Dieser Service soll Standorddaten von Ihrem Telefon sammeln und aufbereiten. Dazu wird st&auml;ndig (wenn aktiviert) jede festgestellte Position des Telefons aufbereitet, zwischengespeichert und in regelm&auml;&szlig;igen Abst&auml;nden an den eingetragenen Server &uuml;bermittelt. Der Server speichert die Positionsdaten zusammen mit einem Zeitstempel, Versionsinformationen und der IP-Adresse des Ger&auml;tes - dauerhaft - in einer Datenbank.<br />
 Auf dem Server lassen sich diese Daten von autorisierten Benutzern (&quot;Freunden&quot;) abrufen und anzeigen.<br />
-Benutzername, Passwort, eine Liste der Freunde und Authentifizierungs-Tokens werden auf dem Server gespeichert.</p>
+Benutzername, Passwort-Hash, eine Liste der Freunde und Authentifizierungs-Tokens werden auf dem Server gespeichert.</p>
 
 
 <p><h2>Copyright Informationen</h2>
-Diese Software ist open-source gem&auml;&szlig; den Bedingungen der AGPL 3<br />
+Diese Software ist Open Source gem&auml;&szlig; den Bedingungen der AGPL 3<br />
 Den Quelltext finden sie auf <a href="http://github.com/h3ndrik/OpenLocation">github.com/h3ndrik/OpenLocation</a>
 <blockquote><pre>Copyright (c) 2012 Hendrik Langer  dev@h3ndrik.de
 

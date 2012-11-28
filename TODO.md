@@ -7,20 +7,20 @@ done
 
 v0.2 (Alpha)
 ----
-- Friends page (PHP) *done, but ugly*
+- Friends page (PHP) *done*
 - Request Friendship (PHP) *done, awaiting bugs*
 - Grant Friendship (PHP) *done, awaiting bugs*
 - Delete friends (PHP) *done, awaiting bugs*
-- Status page (PHP) *done, but ugly*
+- Status page (PHP) *done*
 - Delete locations - interval (PHP) *done, awaiting bugs*
-- Delete locations - all (PHP) *done, not tested*
+- Delete locations - all (PHP) *done*
 - fix back button (Android) *done*
 - fix refresh (Android) *done?*
 - upload on data connection becoming available (Android) *done?*
 - correctly handle nested sql results (replace wiht $result1 $result2...?) (PHP) *done*
 - Datenschutzerklärung & Info (PHP) *done*
 - don't save passwords in plaintext (PHP) *done*
-- fix token handling for usernames with ':' and '-' (strrpos) (PHP)
+- fix token handling for usernames with ':' and '-' (strrpos) (PHP) *done?*
 
 v0.3 (Alpha)
 -----------

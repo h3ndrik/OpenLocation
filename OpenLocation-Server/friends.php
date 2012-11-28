@@ -85,7 +85,7 @@ else $rows = null;
 echo "<h2>Friends:</h2>\n";
 if (count($rows) > 0) {
   for ($i=0; $i<count($rows); $i++) {
-    echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\"><a href=\"/?friend=" . $rows[$i] . "\">" . $rows[$i] . "</a> <input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
+    echo "<p><form action=\"/\" method=\"GET\" style=\"display:inline;\"><input type=\"hidden\" name=\"friend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"".$rows[$i]."\" /></form><span class=\"function\"><form action=\"\" method=\"POST\" style=\"display:inline;\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></span></p>\n";
   }
 }
 else echo "<p>none</p>\n";
@@ -97,7 +97,7 @@ else $rows = null;
 if (count($rows) > 0) {
   echo "<h3>Pending:</h3>\n";
   for ($i=0; $i<count($rows); $i++) {
-    echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\">" . $rows[$i] . " <input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
+    echo "<p>" . $rows[$i] . " <span class=\"function\"><form action=\"\" method=\"POST\" style=\"display:inline;\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></span></p>\n";
   }
 }
 
@@ -108,14 +108,14 @@ else $rows = null;
 if (count($rows) > 0) {
   echo "<h3>Incoming Requests:</h3>\n";
   for ($i=0; $i<count($rows); $i++) {
-    echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\">" . $rows[$i] . " <input type=\"hidden\" name=\"localrequestfriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"ACCEPT\" /></form><form action=\"\" method=\"POST\" style=\"display:inline;\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
+    echo "<p>" . $rows[$i] . " <span class=\"function\"><form action=\"\" method=\"POST\" style=\"display:inline;\"><input type=\"hidden\" name=\"localrequestfriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"ACCEPT\" /></form><form action=\"\" method=\"POST\" style=\"display:inline;\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DECLINE\" /></form></span></p>\n";
   }
 }
 
 // request friendship
 echo "<h2>New Friend:</h2>\n";
 echo "<p><form action=\"\" method=\"POST\">\n";
-echo "Request friendship with: <input type=\"text\" name=\"sendrequestfriend\" /><input type=\"submit\" />\n";
+echo "Request friendship with: <span class=\"function\"><input type=\"text\" name=\"sendrequestfriend\" /><input type=\"submit\" /></span>\n";
 echo "</form></p>\n";
 
 makeHtmlFooter();

@@ -5,15 +5,19 @@ require_once('functions.php');
 function displayForm() {
   echo "<h2>Register new user</h2>\n";
   echo "<form action=\"register.php\" method=\"POST\">\n";
-  echo "<p>Username: <input type=\"text\" name=\"username\" /></p>\n";
-  echo "<p>Password: <input type=\"password\" name=\"password\" /></p>\n";
-  echo "<p><input type=\"submit\" /></p>\n";
+  echo "<p>Username: <span class=\"function\"><input type=\"text\" name=\"username\" /></span></p>\n";
+  echo "<p>Password: <span class=\"function\"><input type=\"password\" name=\"password\" /></span></p>\n";
+  echo "<p><span class=\"function\"><input type=\"submit\" /></span>&nbsp;</p>\n";
   echo "</form>\n\n";
 }
 
 makeHtmlHeader($_SERVER['HTTP_HOST']);
 echo "<h2><strong>OpenLocation - Register new user on " . $_SERVER['HTTP_HOST'] . "</strong></h2>\n\n";
-echo "<p><div class=\"warningbox\">WARNING: This is alpha software. Encryption is not implemented (yet) and there may be major bugs. Your data is not safe in any way. Use it at your own risk.</div></p>";
+echo "<p><div class=\"warningbox\">WARNING: This is alpha software. Encryption is not implemented (yet) and there may be major bugs. Your data is not safe in any way. Use it at your own risk!</div></p>";
+
+if (defined('DEBUG') && strcmp(DEBUG, "yesdoit") === 0) {
+echo "<p><div class=\"warningbox\">WARNING: Debug mode enabled on " . $_SERVER['HTTP_HOST'] . ".</div></p>";
+}
 
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {

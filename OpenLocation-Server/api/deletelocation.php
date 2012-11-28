@@ -29,7 +29,7 @@ if (strrpos($interval, "-")) {
   if ($numrows != null && $numrows >= 0)
     $response = '{"request":"deletelocation", "error":"0", "rows":"' . $numrows . '"}';
   else
-    $response = '{"request":"deletelocation", "error":"Error"}';
+    $response = '{"request":"deletelocation", "error":"Error, 0 rows deleted"}';
 
   mysql_close();
 

@@ -4,10 +4,12 @@ body { padding:0px 5px 0px 5px; background-color:#e8e8e8; color:#000000; }
 
 h1 { background-color:#222222; color:#f3f3f3; padding:5px 20px 5px 96px; margin:-10px -12px 15px -19px; background:#222222 url(logo.png) left no-repeat; }
 h1 a { text-decoration: none; color:#f3f3f3; }
-h2 { color:#343434; font-size:100%; text-transform:uppercase; padding-left:7px; margin-top:30px; border-bottom:1px solid #b9b9b9; }
-h3 { color:#343434; font-size:100%; padding-left:7px; margin-top:5px; border-bottom:1px solid #b9b9b9; }
+h2 { color:#343434; font-size:100%; text-transform:uppercase; padding-left:7px; margin-top:30px; border-bottom:1px solid #b9b9b9; clear:both; }
+h3 { color:#343434; font-size:100%; padding-left:7px; margin-top:5px; border-bottom:1px solid #b9b9b9; clear:both; }
 
-.back { text-transform:uppercase; border-top:1px solid #b9b9b9; text-align:right; padding:5px; margin-top:30px; }
+.back { text-transform:uppercase; border-top:1px solid #b9b9b9; text-align:right; padding:5px; margin-top:30px; clear:both; }
+.function { float:right; /*position:absolute; right:10px;*/ }
+input { padding:5px; }
 
 .errorbox { color:#000000; background-color:#ff3434; border:2px dashed #343434; padding:5px; margin:10px }
 .warningbox { color:#000000; background-color:#ffff34; border:2px dashed #343434; padding:5px; margin:10px }
