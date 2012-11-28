@@ -22,7 +22,7 @@ if (isset($_POST["deletelocation"])) {
   if ($result != null && $result->{'request'} == "deletelocation" && $result->{'error'}[0] === "0") {
     echo "<div class=\"successbox\">Successfully deleted locations in interval: &quot;" . htmlspecialchars($_POST["deletelocation"]) . "&quot</div><br />\n<div class=\"warningbox\">Make sure to clean the cache of the App, as it may have locations in the upload queue. Also you may want to disable it.</div>\n";
   }
-  else diewitherror ('Bad Answer: ' . $http_result);
+  else diewitherror ('Bad Answer: ' . htmlspecialchars($http_result));
 }
 
 /* Request deleteuser */
@@ -37,7 +37,7 @@ if (isset($_POST["deleteuser"])) {
   if ($result != null && $result->{'request'} == "deleteuser" && $result->{'error'} == "0") {
     echo "<iv class=\"successbox\">Successfully deleted user</div>\n";
   }
-  else diewitherror ('Bad Answer: ' . $http_result);
+  else diewitherror ('Bad Answer: ' . htmlspecialchars($http_result));
 }
 
 
