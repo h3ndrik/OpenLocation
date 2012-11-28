@@ -22,10 +22,13 @@ v0.2 (Alpha)
 - don't save passwords in plaintext (PHP) *done*
 - fix token handling for usernames with ':' and '-' (strrpos) (PHP) *done?*
 - add circle for accuracy of position (PHP) *done?*
-- make sure updates are only done once (Android) *done?*
+- make sure updates are only done once (Android) *done? -> probably not*
+- store hash of password (PHP) *done*
 
 v0.3 (Alpha)
 -----------
+- dig out progress bar (from underneath title bar) (Android)
+- still multiple asynchttptransfers? (Android)
 - refactor & clean code (Android)
 - clean locationcache (Android)
 - helper class for server api (Android)
@@ -37,6 +40,7 @@ v0.3 (Alpha)
 
 v0.4 (Alpha)
 ------------
+- log out (PHP)
 - write error messages to serverlog everywhere(!) for debugging and testing (PHP)
 - Move code into (self-contained?) libraries, eg. auth (PHP)
 - Remove 'die's, clean error handling (PHP)
@@ -68,7 +72,6 @@ v0.7 (Beta)
 -----------
 - Bugfix
 - Server2Server Encryption (PHP)
-- store hash of password (PHP & Android)
 
 v0.8 (Beta)
 -----------
