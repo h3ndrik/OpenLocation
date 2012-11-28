@@ -25,6 +25,7 @@ v0.2 (Alpha)
 v0.3 (Alpha)
 -----------
 
+- make sure updates are only done once (Android)
 - cleancache (Android)
 - clear auth data in webview when credentials change (Android)
 - add circle for accuracy of position (PHP)
