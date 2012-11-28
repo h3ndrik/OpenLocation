@@ -213,6 +213,6 @@ public class OpenLocationMainActivity extends Activity {
 			webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");
 		}
 		else if (webview.getOriginalUrl().equals("http://" + Utils.getDomain(getBaseContext()) + "/")) webview.reload();
-		//OpenLocationMainActivity.this.webview.loadUrl("http://" + Utils.getDomain(getBaseContext()) + "/");  // does reload() work?
+		setProgressBarVisibility(true);
 	}
 }
