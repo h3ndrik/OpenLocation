@@ -132,7 +132,7 @@ if (empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
 if (isset($_GET["logout"])) {
     $realm = 'Openlocation_Logout';
     send401Header($realm);
-    //header('Location: http://' . $_SERVER['HTTP_HOST'] . '/');
+    header('Location: http://' . $_SERVER['HTTP_HOST'] . '/');
     $body = '<p><a href="register.php">Register new user</a>' . "</p>\n"
           . '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
     diewitherror('Logging out not yet implemented! Please close the browser.', $body);

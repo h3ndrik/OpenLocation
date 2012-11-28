@@ -128,6 +128,6 @@ function sendrequestfriend($user_local, $target) {
   elseif ($result != null && $result->{'request'} == "requestfriend" && $result->{'error'} == "Is already a friend") {
     return -2;
   }
-  else die ('{"request":"sendrequestfriend", "error":"sendrequestfriend(): requestfriend returned bad answer: ' . $http_result . '"}');
+  else die ('{"request":"sendrequestfriend", "error":"sendrequestfriend(): requestfriend returned bad answer: ' . htmlspecialchars($http_result) . '"}');
 }
 ?>
