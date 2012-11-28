@@ -1,5 +1,7 @@
 package de.h3ndrik.openlocation;
 
+import java.io.File;
+
 import de.h3ndrik.openlocation.util.Utils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.LocationManager;
 import android.util.Log;
 import android.view.Menu;
@@ -168,8 +171,16 @@ public class OpenLocationMainActivity extends Activity {
 	public static void clearWebviewCache(Context context) {
 		if (webview != null) {
 			// TODO: This does not work
-			webview.clearCache(true);
-			//webview.reload();
+			try {
+				webview.clearCache(true);
+				context.deleteDatabase("webview.db");
+				context.deleteDatabase("webviewCache.db");
+				// TODO: Insert Snippet from http://stackoverflow.com/questions/2465432/android-webview-completely-clear-the-cache
+			}
+			catch (Exception e) {
+				// continue
+			}
+			webview.reload();
 		}
 	}
 	

@@ -1,11 +1,11 @@
 TODO
 ====
 
-0.1 (Alpha)
+0.1 (Alpha) *done*
 ---
 done
 
-v0.2 (Alpha)
+v0.2 (Alpha) *done*
 ----
 - Friends page (PHP) *done*
 - Request Friendship (PHP) *done*
@@ -37,6 +37,7 @@ v0.3 (Alpha)
 
 v0.4 (Alpha)
 ------------
+- logout (PHP)
 - write error messages to serverlog everywhere(!) for debugging and testing (PHP)
 - Move code into (self-contained?) libraries, eg. auth (PHP)
 - Remove 'die's, clean error handling (PHP)
