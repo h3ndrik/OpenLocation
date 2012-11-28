@@ -26,8 +26,8 @@ v0.2 (Alpha)
 
 v0.3 (Alpha)
 -----------
+- refactor & clean code (Android)
 - clean locationcache (Android)
-- clear auth data in webview when credentials change (Android)
 - helper class for server api (Android)
 - Delete pref (Android)
 - Friends Activity (Android)
@@ -59,6 +59,7 @@ v0.5 (Alpha)
 v0.6 (Beta)
 -----------
 - Bugfix
+- stable api
 - implement openlocation auth 0.2
 - Encryption (Android)
 
@@ -72,6 +73,7 @@ v0.8 (Beta)
 -----------
 - Bugfix
 - translate (PHP)
+- refactor & clean code (PHP)
 - Release
 
 v0.9 (Beta)
@@ -89,6 +91,7 @@ later
 - Fake position
 - custom update intervals etc. (Android)
 - Delete user (PHP)
+- clear auth data in webview when credentials change (Android)
 - Fragments UI
 - see [android-sdk/samples/SampleSyncAdapter]
 - replace Credentials in SharedPreferences with AccountManager (Android) [http://developer.android.com/reference/android/accounts/AccountManager.html]
