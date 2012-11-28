@@ -43,7 +43,7 @@ function newtoken() {
   else {
     $alphabet = "0123456789abcdef";
     $token = "";
-    for ($i=0; i<32; $i++) $token .= $alphabet[mt_rand(0, strlen($alphabet)-1)];
+    for ($i=0; $i<32; $i++) $token .= $alphabet[mt_rand(0, strlen($alphabet)-1)];
     return $token;
   }
 }
