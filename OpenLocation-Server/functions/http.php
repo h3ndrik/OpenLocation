@@ -121,11 +121,14 @@ function validateUser() {
 
 $realm = 'OpenLocation';
 
+if (empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) && !empty($_SERVER['PHP_AUTH_DIGEST'])) $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] = $_SERVER['PHP_AUTH_DIGEST'];
+elseif (empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) && !empty($_SERVER['HTTP_AUTHORIZATION'])) $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] = $_SERVER['HTTP_AUTHORIZATION'];
+
 if (empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
     send401Header($realm);
     $body = '<p><a href="register.php">Register new user</a>' . "</p>\n"
           . '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
-    diewitherror('Abgebrochen. Nicht Autorisiert!', $body); // Text, der gesendet wird, falls der Benutzer auf Abbrechen drückt
+    diewitherror('Autorisierung erforderlich!', $body); // Text, der gesendet wird, falls der Benutzer auf Abbrechen drückt
 }
 
 // Force (re)auth (retry) TODO: do it right, http auth is fucked up beyond repair
@@ -142,7 +145,7 @@ if (isset($_GET["logout"])) {
 if (!($daten = http_digest_parse($_SERVER['REDIRECT_HTTP_AUTHORIZATION']))) {
   send401Header($realm);
   $body = '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
-  diewitherror('Falsche Zugangsdaten!', $body);
+  diewitherror('Falsche Antwort!', $body);
 }
 
 if (strrpos($daten["username"], "@")) {

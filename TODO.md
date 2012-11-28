@@ -47,6 +47,7 @@ v0.4 (Alpha)
 - don't make blocking http requests (PHP)
 - give sane error messages, and display them properly (PHP)
 - implement all remaining TODOs from code
+- make it work in subfolders instead only subdomains
 
 v0.5 (Alpha)
 -----------
