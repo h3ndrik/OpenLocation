@@ -4,6 +4,8 @@ require_once('functions.php');
 /* HttpAuth */
 list ($user, $domain) = validateUser();
 
+makeHtmlHeader("Status");
+
 /* Get own token */
 $token = getowntoken($user);
 
@@ -18,9 +20,9 @@ if (isset($_POST["deletelocation"])) {
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "deletelocation" && $result->{'error'}[0] === "0") {
-    echo "<span style=\"color:#00C000\">Successfully deleted locations in interval: &quot;" . htmlspecialchars($_POST["deletelocation"]) . "&quot</span><br />\n<span style=\"color:#C0ß000\">Make sure to clean the cache of the App, as it may have locations in the upload queue. Also you may want to disable it.</span>\n";
+    echo "<div class=\"successbox\">Successfully deleted locations in interval: &quot;" . htmlspecialchars($_POST["deletelocation"]) . "&quot</div><br />\n<div class=\"warningbox\">Make sure to clean the cache of the App, as it may have locations in the upload queue. Also you may want to disable it.</div>\n";
   }
-  else die ('Bad Answer: ' . $http_result);
+  else diewitherror ('Bad Answer: ' . $http_result);
 }
 
 /* Request deleteuser */
@@ -33,9 +35,9 @@ if (isset($_POST["deleteuser"])) {
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "deleteuser" && $result->{'error'} == "0") {
-    echo "<span style=\"color:#00C000\">Successfully deleted user</span>\n";
+    echo "<iv class=\"successbox\">Successfully deleted user</div>\n";
   }
-  else die ('Bad Answer: ' . $http_result);
+  else diewitherror ('Bad Answer: ' . $http_result);
 }
 
 
@@ -47,10 +49,8 @@ if (isset($_POST["deleteuser"])) {
 
 
 /* Now the page */
-makeHtmlHeader("Status");
 
-echo "<a href=\"/\"><center><h1>OpenLocation - " . $user . "</h1></center></a>";
-echo "<hr />";
+echo "<h2>Delete locations</h2>\n";
 
 //echo "<form action=\"\" method=\"POST\">\n";
 //echo "<p>Delete locations interval: <input type=\"text\" name=\"deletelocation\" /><input type=\"submit\" /></p>\n";
@@ -113,21 +113,17 @@ echo "</form>\n";
 
 echo "</p>";
 
-echo "<hr />\n";
+echo "<h2>Delete User</h2>\n";
 
-echo "<form action=\"\" method=\"POST\">\n";
-echo "<p>Delete user <input type=\"hidden\" name=\"deleteuser\" value=\"true\" /><input type=\"submit\" /></p>\n";
-echo "</form>\n";
+echo "<p><form action=\"\" method=\"POST\">\n";
+echo "Delete user <input type=\"hidden\" name=\"deleteuser\" value=\"true\" /><input type=\"submit\" />\n";
+echo "</form></p>\n";
 
-echo "<hr />\n";
+echo "<h2>Info</h2>\n";
 
-echo "<form action=\"/info.php\" method=\"GET\">\n";
-echo "<p>Info &amp; Datenschutzerkl&auml;rung <input type=\"hidden\" name=\"info\" value=\"true\" /><input type=\"submit\" value=\"Info\" /></p>\n";
-echo "</form>\n";
-
-echo "<hr />\n";
-
-echo "<div align=\"right\"><a href=\"/\">back</a></div>\n";
+echo "<p><form action=\"/info.php\" method=\"GET\">\n";
+echo "Info &amp; Datenschutzerkl&auml;rung <input type=\"hidden\" name=\"info\" value=\"true\" /><input type=\"submit\" value=\"Info\" />\n";
+echo "</form></p>\n";
 
 makeHtmlFooter();
 ?>

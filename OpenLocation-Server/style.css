@@ -1,0 +1,29 @@
+* { font-family:Helvetica,sans-serif; }
+
+body { padding:0px 5px 0px 5px; background-color:#e8e8e8; color:#000000; }
+
+h1 { background-color:#222222; color:#f3f3f3; padding:5px 20px 5px 96px; margin:-10px -12px 15px -19px; background:#222222 url(logo.png) left no-repeat; }
+h1 a { text-decoration: none; color:#f3f3f3; }
+h2 { color:#343434; font-size:100%; text-transform:uppercase; padding-left:7px; margin-top:30px; border-bottom:1px solid #b9b9b9; }
+h3 { color:#343434; font-size:100%; padding-left:7px; margin-top:5px; border-bottom:1px solid #b9b9b9; }
+
+.back { text-transform:uppercase; border-top:1px solid #b9b9b9; text-align:right; padding:5px; margin-top:30px; }
+
+.errorbox { color:#000000; background-color:#ff3434; border:2px dashed #343434; padding:5px; margin:10px }
+.warningbox { color:#000000; background-color:#ffff34; border:2px dashed #343434; padding:5px; margin:10px }
+.successbox { color:#000000; background-color:#34ff34; border:2px dashed #343434; padding:5px; margin:10px }
+
+ .button {
+     /*basic styles*/ width: 120px; height: 45px;
+     color: #4f4f4f; background-color: #ffffff;
+     text-align: center; font-size: 30px; line-height: 45px;
+     /*gradient styles*/ background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#efefef)); background: -moz-linear-gradient(19% 75% 90deg,#efefef, #ffffff);
+     /*border styles*/ border-top: solid 2px #8f8f8f; border-bottom: solid 2px #1a1a1a; border-left: solid 2px #4f4f4f; border-right: solid 2px #4f4f4f; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+     /*position position:absolute; bottom:16px; left:0px; z-index: 100; */
+ }
+ .button p { 
+      font-size: 30px; line-height: 70px; font-family: verdana, sans-serif; font-weight: bold; text-shadow: 0px 2px 3px #444;
+ }
+ .button a { text-decoration: none; color: fff; }
+ .button:hover { background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#efefef), to(#cdcdcd)); background: -moz-linear-gradient(19% 75% 90deg,#cdcdcd, #efefef); border-top: solid 2px #8f8f8f; border-bottom: solid 2px #1a1a1a; }
+ .button p:hover{ text-shadow: 0px 2px 3px #555; }

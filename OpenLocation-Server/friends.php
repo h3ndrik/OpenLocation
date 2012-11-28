@@ -4,6 +4,8 @@ require_once('functions.php');
 /* HttpAuth */
 list ($user, $domain) = validateUser();
 
+makeHtmlHeader("Friends");
+
 /* Get own token */
 $token = getowntoken($user);
 
@@ -20,9 +22,9 @@ if (isset($_POST["removefriend"])) {
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "removefriend" && $result->{'error'}[0] === "0") {
-    echo "<span style=\"color:#00C000\">Successfully removed user &quot;" . htmlspecialchars($target_local) . "&quot</span>\n";
+    echo "<div class=\"successbox\">Successfully removed user &quot;" . htmlspecialchars($target_local) . "&quot</div>\n";
   }
-  else die ('Bad Answer: ' . $http_result);
+  else diewitherror ('Bad Answer: ' . $http_result);
 }
 
 
@@ -47,15 +49,15 @@ if (isset($_POST["sendrequestfriend"])) {
   $result = json_decode($http_result);
 
   if ($result != null && $result->{'request'} == "sendrequestfriend" && $result->{'error'} == "0") {
-    echo "<span style=\"color:#00C000\">Successfully granted friendship to user &quot;" . htmlspecialchars($target_fullusername) . "&quot</span>\n";
+    echo "<div class=\"successbox\">Successfully granted friendship to user &quot;" . htmlspecialchars($target_fullusername) . "&quot</div>\n";
   }
   elseif ($result != null && $result->{'request'} == "sendrequestfriend" && $result->{'error'} == "User does not exist") {
-    echo "<span style=\"color:#C00000\">User &quot;" . htmlspecialchars($target_fullusername) . "&quot does not exist</span>\n";
+    echo "<div class=\"errorbox\">User &quot;" . htmlspecialchars($target_fullusername) . "&quot does not exist</div>\n";
   }
   elseif ($result != null && $result->{'request'} == "sendrequestfriend" && $result->{'error'} == "Is already a friend") {
-    echo "<span style=\"color:#C00000\">You are currently a friend of &quot;" . htmlspecialchars($target_fullusername) . "&quot. Ask him/her to remove friendship with you before re-applying for friendship.</span>\n";
+    echo "<div class=\"errorbox\">You are currently a friend of &quot;" . htmlspecialchars($target_fullusername) . "&quot. Ask him/her to remove friendship with you before re-applying for friendship.</div>\n";
   }
-  else die ('Bad Answer: ' . $http_result);
+  else diewitherror ('Bad Answer: ' . $http_result);
 }
 
 
@@ -67,10 +69,6 @@ if (isset($_POST["sendrequestfriend"])) {
 
 
 /* Now the page */
-makeHtmlHeader("Friends");
-
-echo "<a href=\"/\"><center><h1>OpenLocation - " . $user . "</h1></center></a>";
-echo "<hr />";
 
 /* Request list of friends */
 $url = "http://" . $domain . "/api.php";
@@ -79,12 +77,12 @@ $req_json = json_encode(array("request" => "getfriends", "sender" => $user, "tok
 $http_result = doBlockingHttpJsonRequest($url, $req_json);
 $result = json_decode($http_result);
 
-if ($result == null || empty($result)) die ('Bad json: ' . $http_result);
+if ($result == null || empty($result)) diewitherror ('Bad json: ' . $http_result);
 
 if (isset($result->{'data'})) $rows = $result->{'data'};
 else $rows = null;
 
-echo "<h3>Friends:</h3>\n";
+echo "<h2>Friends:</h2>\n";
 if (count($rows) > 0) {
   for ($i=0; $i<count($rows); $i++) {
     echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\"><a href=\"/?friend=" . $rows[$i] . "\">" . $rows[$i] . "</a> <input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
@@ -92,37 +90,33 @@ if (count($rows) > 0) {
 }
 else echo "<p>none</p>\n";
 
-echo "<hr />\n";
-
+// Pending friends
 if (isset($result->{'pending'})) $rows = $result->{'pending'};
 else $rows = null;
 
 if (count($rows) > 0) {
-  echo "<h4>Pending:</h4>\n";
+  echo "<h3>Pending:</h3>\n";
   for ($i=0; $i<count($rows); $i++) {
     echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\">" . $rows[$i] . " <input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
   }
-  echo "<hr />\n";
 }
 
+// Incoming friends
 if (isset($result->{'incoming'})) $rows = $result->{'incoming'};
 else $rows = null;
 
 if (count($rows) > 0) {
-  echo "<h4>Incoming Requests:</h4>\n";
+  echo "<h3>Incoming Requests:</h3>\n";
   for ($i=0; $i<count($rows); $i++) {
     echo "<p><form action=\"\" method=\"POST\" style=\"display:inline;\">" . $rows[$i] . " <input type=\"hidden\" name=\"localrequestfriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"ACCEPT\" /></form><form action=\"\" method=\"POST\" style=\"display:inline;\"><input type=\"hidden\" name=\"removefriend\" value=\"".$rows[$i]."\" /><input type=\"submit\" value=\"DELETE\" /></form></p>\n";
   }
-  echo "<hr />\n";
 }
 
-echo "<form action=\"\" method=\"POST\">\n";
-echo "<p>Request friendship with: <input type=\"text\" name=\"sendrequestfriend\" /><input type=\"submit\" /></p>\n";
-echo "</form>\n";
-
-echo "<hr />\n";
-
-echo "<div align=\"right\"><a href=\"/\">back</a></div>\n";
+// request friendship
+echo "<h2>New Friend:</h2>\n";
+echo "<p><form action=\"\" method=\"POST\">\n";
+echo "Request friendship with: <input type=\"text\" name=\"sendrequestfriend\" /><input type=\"submit\" />\n";
+echo "</form></p>\n";
 
 makeHtmlFooter();
 ?>

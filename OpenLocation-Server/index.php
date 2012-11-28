@@ -7,6 +7,7 @@ list ($user, $domain) = validateUser();
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html><head><title>OpenLocation - Main</title>
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
   <!--[if lte IE 8]>
      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
   <![endif]-->
@@ -21,20 +22,6 @@ body {
 html, body, #map {
     height: 100%;
 }
- .button {
-     /*basic styles*/ width: 120px; height: 45px;
-     color: #4f4f4f; background-color: #ffffff;
-     text-align: center; font-size: 30px; line-height: 45px;
-     /*gradient styles*/ background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#efefef)); background: -moz-linear-gradient(19% 75% 90deg,#efefef, #ffffff);
-     /*border styles*/ border-top: solid 2px #8f8f8f; border-bottom: solid 2px #1a1a1a; border-left: solid 2px #4f4f4f; border-right: solid 2px #4f4f4f; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
-     /*position position:absolute; bottom:16px; left:0px; z-index: 100; */
- }
- .button p { 
-      font-size: 30px; line-height: 70px; font-family: verdana, sans-serif; font-weight: bold; text-shadow: 0px 2px 3px #444;
- }
- .button a { text-decoration: none; color: fff; }
- .button:hover { background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#efefef), to(#cdcdcd)); background: -moz-linear-gradient(19% 75% 90deg,#cdcdcd, #efefef); border-top: solid 2px #8f8f8f; border-bottom: solid 2px #1a1a1a; }
- .button p:hover{ text-shadow: 0px 2px 3px #555; }
  #friends {
   /*position*/ position:absolute; bottom:64px; right:0px; z-index: 100;
  }
@@ -140,7 +127,7 @@ map.on('locationerror', onLocationError);
   $starttime = (string)(time()*1000-86400000);
   $endtime = (string)(time()*1000);
   $query = "SELECT * FROM " . mysql_real_escape_string($user) . "  WHERE time > " . mysql_real_escape_string($starttime) . " AND time < " . mysql_real_escape_string($endtime) . " ORDER BY time ASC;";
-  $result = mysql_query($query) or die("MySQL Error (SELECT): " . mysql_error());
+  $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
 
   if (mysql_num_rows($result) != false && mysql_num_rows($result) > 0) {
     echo 'var polyline_' . $user . ' = L.polyline([';

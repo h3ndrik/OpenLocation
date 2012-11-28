@@ -3,11 +3,22 @@ function makeHtmlHeader($title) {
   echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\n";
   echo "<html><head><title>OpenLocation - $title</title>\n";
   echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\" />\n";
-  echo "</head><body>\n\n";
+  echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\n";
+  echo "</head><body>\n";
+  echo "<a href=\"/\"><h1>" . $title . "</h1></a>\n\n";
 }
 
 function makeHtmlFooter() {
-  echo "\n</body></html>";
+  echo "\n<a href=\"/\"><div class=\"back\">back</div></a>\n";
+  echo "</body></html>";
+}
+
+function diewitherror($error, $body = null) {
+makeHtmlHeader("OpenLocation");
+echo "<div class=\"errorbox\">" . $error . "</div>\n";
+if ($body != null) echo $body . "\n";
+makeHtmlFooter();
+die();
 }
 
 
@@ -17,7 +28,7 @@ function send400Header() {
 }
 function die400($error) {
     header('HTTP/1.1 400 Bad Request');
-    die($error);
+    diewitherror($error);
 }
 function send401Header($realm) {
     header('HTTP/1.1 401 Unauthorized');
@@ -30,14 +41,14 @@ function send403Header() {
 }
 function die403($error) {
     header('HTTP/1.1 403 Forbidden');
-    die($error);
+    diewitherror($error);
 }
 function send500Header() {
     header('HTTP/1.1 500 Internal Server Error');
 }
 function die500($error) {
     header('HTTP/1.1 500 Internal Server Error');
-    die($error);
+    diewitherror($error);
 }
 
 
@@ -112,26 +123,26 @@ $realm = 'OpenLocation';
 
 if (empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
     send401Header($realm);
-    echo '<p><a href="register.php">Register new user</a>' . "</p>\n";
-    echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
-    die('Abgebrochen. Nicht Autorisiert!'); // Text, der gesendet wird, falls der Benutzer auf Abbrechen drückt
+    $body = '<p><a href="register.php">Register new user</a>' . "</p>\n"
+          . '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+    diewitherror('Abgebrochen. Nicht Autorisiert!', $body); // Text, der gesendet wird, falls der Benutzer auf Abbrechen drückt
 }
 
 // Force (re)auth (retry) TODO: do it right, http auth is fucked up beyond repair
 if (isset($_GET["logout"])) {
     $realm = 'Openlocation_Logout';
     send401Header($realm);
-    header('Location: http://' . $_SERVER['HTTP_HOST'] . '/');
-    echo '<p><a href="register.php">Register new user</a>' . "</p>\n";
-    echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
-    die('Logged out. (Not yet implemented!)');
+    //header('Location: http://' . $_SERVER['HTTP_HOST'] . '/');
+    $body = '<p><a href="register.php">Register new user</a>' . "</p>\n"
+          . '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+    diewitherror('Logging out not yet implemented! Please close the browser.', $body);
 }
 
 // Analysieren der Variable PHP_AUTH_DIGEST
 if (!($daten = http_digest_parse($_SERVER['REDIRECT_HTTP_AUTHORIZATION']))) {
   send401Header($realm);
-  echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
-  die('Falsche Zugangsdaten!');
+  $body = '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  diewitherror('Falsche Zugangsdaten!', $body);
 }
 
 if (strrpos($daten["username"], "@")) {
@@ -146,18 +157,18 @@ if (strrpos($daten["username"], "@")) {
 // Überprüfen ob richtiger host
 if (strrpos($daten["username"], "@") && strcmp($domain , $_SERVER['HTTP_HOST']) != 0) {
   send403Header();
-  echo '<span style="color:#FF0000">Wrong Host! Expected: ...@' . $_SERVER['HTTP_HOST'] . '</span><br />Please register at <a href="http://' . $domain . '">http://' . $domain . '</a>.<hr />';
-  echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  $body = 'Please register at <a href="http://' . $domain . '">http://' . $domain . '</a>.'
+        . '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
   writetolog("Error: username contains different host");
-  die("Aborting");
+  diewitherror("Wrong Host! Expected: ...@" . $_SERVER['HTTP_HOST'], $body);
 }
 
 if (strlen($local) < 1) {
   send401Header($realm);
-  echo '<p><a href="register.php">Register new user</a>' . "</p>\n";
-  echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  $body = '<p><a href="register.php">Register new user</a>' . "</p>\n"
+        . '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
   writetolog("Username wrong format");
-  die ("Username wrong format.");
+  diewitherror ("Username wrong format.", $body);
 }
 connectToMySQL();
 $query = "SELECT * FROM users WHERE username = '" . mysql_real_escape_string($local) . "';";
@@ -175,9 +186,9 @@ else {
   mysql_free_result($result);
   mysql_close();
   send401Header($realm);
-  echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  $body = '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
   writetolog("Error: User \"" . $local . "\" not found.");
-  die('User &quot;' . $local . '&quot; not found.');
+  diewitherror('User &quot;' . $local . '&quot; not found.', $body);
 }
 //    !isset($benutzer[$daten['username']]))
 
@@ -194,9 +205,9 @@ $gueltige_antwort2 = md5($password_fullusername . ':' . $daten['nonce'] . ':' . 
 
 if ($daten['response'] != $gueltige_antwort && $daten['response'] != $gueltige_antwort2)  {
   send401Header($realm);
-  echo '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
+  $body = '<p><a href="http://' . $_SERVER['HTTP_HOST'] . '/?logout">Retry</a></p>';
   writetolog("Error: Falsche Zugangsdaten");
-  die('Falsche Zugangsdaten!');
+  diewitherror('Falsche Zugangsdaten!', $body);
 }
 
 // OK, gültige Benutzername & Passwort
