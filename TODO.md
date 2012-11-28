@@ -8,11 +8,11 @@ done
 v0.2 (Alpha)
 ----
 - Friends page (PHP) *done*
-- Request Friendship (PHP) *done, awaiting bugs*
-- Grant Friendship (PHP) *done, awaiting bugs*
-- Delete friends (PHP) *done, awaiting bugs*
+- Request Friendship (PHP) *done*
+- Grant Friendship (PHP) *done*
+- Delete friends (PHP) *done*
 - Status page (PHP) *done*
-- Delete locations - interval (PHP) *done, awaiting bugs*
+- Delete locations - interval (PHP) *done*
 - Delete locations - all (PHP) *done*
 - fix back button (Android) *done*
 - fix refresh (Android) *done?*
@@ -21,19 +21,19 @@ v0.2 (Alpha)
 - Datenschutzerklärung & Info (PHP) *done*
 - don't save passwords in plaintext (PHP) *done*
 - fix token handling for usernames with ':' and '-' (strrpos) (PHP) *done?*
+- add circle for accuracy of position (PHP) *done?*
 
 v0.3 (Alpha)
 -----------
-
 - make sure updates are only done once (Android)
-- cleancache (Android)
+- clean locationcache (Android)
 - clear auth data in webview when credentials change (Android)
-- add circle for accuracy of position (PHP)
 - helper class for server api (Android)
 - Delete pref (Android)
 - Friends Activity (Android)
 - Status Activity (Android)
 - Info/Help screen (Android)
+- progress bar on loading (Android)
 
 v0.4 (Alpha)
 ------------
@@ -59,10 +59,8 @@ v0.5 (Alpha)
 v0.6 (Beta)
 -----------
 - Bugfix
-- implement openlovcation auth 0.2
+- implement openlocation auth 0.2
 - Encryption (Android)
-- Delete user (PHP)
-
 
 v0.7 (Beta)
 -----------
@@ -73,6 +71,7 @@ v0.7 (Beta)
 v0.8 (Beta)
 -----------
 - Bugfix
+- translate (PHP)
 - Release
 
 v0.9 (Beta)
@@ -88,6 +87,8 @@ later
 -----
 - Remove location jitter
 - Fake position
+- custom update intervals etc. (Android)
+- Delete user (PHP)
 - Fragments UI
 - see [android-sdk/samples/SampleSyncAdapter]
 - replace Credentials in SharedPreferences with AccountManager (Android) [http://developer.android.com/reference/android/accounts/AccountManager.html]
