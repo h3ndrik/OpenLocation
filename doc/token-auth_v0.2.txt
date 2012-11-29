@@ -11,3 +11,8 @@ encrypt send locations
 
 client_read_key
 client_write_key
+
+
+user has mastertoken (sha of passwd)
+
+session key? symmetric? -> performance

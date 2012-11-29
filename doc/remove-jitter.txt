@@ -1,0 +1,11 @@
+schlechte accuracy herausfiltern?
+
+tiefpass?
+
+fix -1 ist in accuracy von fix +1,
+oder fix +1 ist in accuracy von fix -1,
+  fix 0 aber nicht
+  und fix 0 accuracy schlechter als beide
+    -> fix 0 löschen (mit 2 markieren)
+
+

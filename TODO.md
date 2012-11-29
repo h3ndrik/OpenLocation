@@ -36,7 +36,6 @@ v0.3 (Alpha)
 - Friends Activity (Android)
 - Status Activity (Android)
 - Info/Help screen (Android)
-- progress bar on loading (Android)
 
 v0.4 (Alpha)
 ------------
@@ -56,7 +55,7 @@ v0.4 (Alpha)
 v0.5 (Alpha)
 -----------
 - Bugfix
-- Mapsforge View (Android)
+- Mapsforge View (osmdroid seems better suited) (Android)
 - CSS (PHP)
 - add marker with popups to path (PHP)
 - translate backend (PHP)
