@@ -174,9 +174,12 @@ public class UpdateReceiver extends BroadcastReceiver {
 			}
 		
 			JSONArray data = new JSONArray();
+			Long previousTimestamp = null;
 		
 			do {
-				
+			    if (previousTimestamp != null && cursor.getLong(0) == previousTimestamp)
+			        continue;  // skip duplicates
+			    				
 				JSONObject row = new JSONObject();
 		
 				try {
@@ -206,9 +209,11 @@ public class UpdateReceiver extends BroadcastReceiver {
 				if (!(deletionMarker.length() == 0))
 					deletionMarker += ", ";
 				deletionMarker += Long.toString(cursor.getLong(0));
+				
+                previousTimestamp = cursor.getLong(0);
 		
 			} while (cursor.moveToNext());
-			
+
             LocationUtils.removeJitter(data);
             if (data.length() == 0) {
                 Log.d(DEBUG_TAG, "AsyncHttp: filtered out as jitter. Skipping transfer");
@@ -224,9 +229,9 @@ public class UpdateReceiver extends BroadcastReceiver {
 			
 			db.dbhelper.close();
 			
-			String data_compressed = null;
+			String json_compressed = null;
 			try {
-				data_compressed = Base64.encodeToString(Utils.gzdeflate(json.toString().getBytes("UTF-8")), Base64.DEFAULT);
+				json_compressed = Base64.encodeToString(Utils.gzdeflate(json.toString().getBytes("UTF-8")), Base64.DEFAULT);
 			} catch (UnsupportedEncodingException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -255,7 +260,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 			//httppost.setParams(httpparams);
 			
 			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-			pairs.add(new BasicNameValuePair("json", data_compressed));
+			pairs.add(new BasicNameValuePair("json", json_compressed));
 			
 			try {
 				httppost.setEntity(new UrlEncodedFormEntity(pairs));
@@ -291,7 +296,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 			}
 	
 			/* Garbage collection */
-			data_compressed = null;
+			json_compressed = null;
 			
 			try {
 				response.getEntity().consumeContent();
