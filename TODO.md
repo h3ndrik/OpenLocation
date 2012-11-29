@@ -1,11 +1,11 @@
 TODO
 ====
 
-0.1 (Alpha)
+0.1 (Alpha) *done*
 ---
 done
 
-v0.2 (Alpha)
+v0.2 (Alpha) *done*
 ----
 - Friends page (PHP) *done*
 - Request Friendship (PHP) *done*
@@ -29,8 +29,9 @@ v0.3 (Alpha)
 -----------
 - dig out progress bar (from underneath title bar) (Android)
 - still multiple asynchttptransfers? (Android)
+- handling ':' and '-' in usernames (PHP)
 - refactor & clean code (Android)
-- clean locationcache (Android)
+- (auto)clean locationcache (Android)
 - helper class for server api (Android)
 - Delete pref (Android)
 - Friends Activity (Android)
@@ -39,7 +40,7 @@ v0.3 (Alpha)
 
 v0.4 (Alpha)
 ------------
-- log out (PHP)
+- logout (PHP)
 - write error messages to serverlog everywhere(!) for debugging and testing (PHP)
 - Move code into (self-contained?) libraries, eg. auth (PHP)
 - Remove 'die's, clean error handling (PHP)
@@ -49,6 +50,7 @@ v0.4 (Alpha)
 - don't make local http connections (PHP)
 - don't make blocking http requests (PHP)
 - give sane error messages, and display them properly (PHP)
+- getlocation optional parameter limit, make start-/endtime optional (PHP)
 - implement all remaining TODOs from code
 - make it work in subfolders instead only subdomains
 
