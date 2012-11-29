@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.h3ndrik.openlocation.util.LocationUtils;
 import de.h3ndrik.openlocation.util.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -145,12 +146,12 @@ public class UpdateReceiver extends BroadcastReceiver {
 			/* Check if something is in database */
 			Cursor cursor = db.dbhelper.getLocalLocations();
 			if (cursor == null || cursor.getCount() < 1) {
-				Log.d(DEBUG_TAG, "sendToServer(): nothing in database");
+				Log.d(DEBUG_TAG, "AsyncHttp: nothing in database");
 				db.dbhelper.close();
 				return null;
 		}
 			else {
-				Log.d(DEBUG_TAG, "sendToServer(): got " + Integer.toString(cursor.getCount()) + " results");
+				Log.d(DEBUG_TAG, "AsyncHttp: got " + Integer.toString(cursor.getCount()) + " results");
 				cursor.moveToFirst();
 			}
 		
@@ -179,7 +180,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 				JSONObject row = new JSONObject();
 		
 				try {
-					
+
 					row.put(DBAdapter.LocationCacheContract.COLUMN_TIME,
 							Long.toString(cursor.getLong(0)));
 					row.put(DBAdapter.LocationCacheContract.COLUMN_LATITUDE,
@@ -200,13 +201,19 @@ public class UpdateReceiver extends BroadcastReceiver {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-		
+
 				data.put(row);
 				if (!(deletionMarker.length() == 0))
 					deletionMarker += ", ";
 				deletionMarker += Long.toString(cursor.getLong(0));
 		
 			} while (cursor.moveToNext());
+			
+            LocationUtils.removeJitter(data);
+            if (data.length() == 0) {
+                Log.d(DEBUG_TAG, "AsyncHttp: filtered out as jitter. Skipping transfer");
+                return null;
+            }
 		
 			try {
 				json.put("data", data);
@@ -258,7 +265,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 				e1.printStackTrace();
 			}
 	
-			Log.d(DEBUG_TAG, "executing request " + httppost.getRequestLine());
+			Log.d(DEBUG_TAG, "AsyncHttp: executing request " + httppost.getRequestLine());
 			HttpResponse response = null;
 			try {
 				response = httpclient.execute(httppost);
@@ -273,7 +280,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 				return "Error: Exception " + e.getMessage();
 			}
 			
-			Log.d(DEBUG_TAG, "got response " + response.getStatusLine());
+			Log.d(DEBUG_TAG, "AsyncHttp: got response " + response.getStatusLine());
 			switch (response.getStatusLine().getStatusCode()) {
 			case 200:
 				//deletionMarker = deletionMarker;
@@ -296,7 +303,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 			/* mark rows in SQLite as done */
 			if (deletionMarker != null && deletionMarker.length() > 0 && !deletionMarker.equals("0") && !deletionMarker.startsWith("Error")) {
 				db.dbhelper.open_w();
-				Log.d(DEBUG_TAG, "marking as done: " + deletionMarker);
+				Log.d(DEBUG_TAG, "AsyncHttp: marking as done: " + deletionMarker);
 				db.dbhelper.markDone(deletionMarker);
 				db.dbhelper.close();
 			}
