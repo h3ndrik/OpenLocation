@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.h3ndrik.openlocation.DBAdapter.Markings;
 import de.h3ndrik.openlocation.util.LocationUtils;
 import de.h3ndrik.openlocation.util.Utils;
 import android.content.BroadcastReceiver;
@@ -141,8 +142,6 @@ public class UpdateReceiver extends BroadcastReceiver {
 			DBAdapter db = new DBAdapter(context);
 			db.dbhelper.open_r();
 			
-			String deletionMarker = "";
-		
 			/* Check if something is in database */
 			Cursor cursor = db.dbhelper.getLocalLocations();
 			if (cursor == null || cursor.getCount() < 1) {
@@ -154,7 +153,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 				Log.d(DEBUG_TAG, "AsyncHttp: got " + Integer.toString(cursor.getCount()) + " results");
 				cursor.moveToFirst();
 			}
-		
+			
 			/* Generate JSON */
 			JSONObject json = new JSONObject();
 		
@@ -174,10 +173,10 @@ public class UpdateReceiver extends BroadcastReceiver {
 			}
 		
 			JSONArray data = new JSONArray();
-			Long previousTimestamp = null;
+			Markings markings = db.new Markings(cursor.getCount());
 		
 			do {
-			    if (previousTimestamp != null && cursor.getLong(0) == previousTimestamp)
+			    if (markings.getPreviousTimestamp() != null && cursor.getLong(0) == markings.getPreviousTimestamp())
 			        continue;  // skip duplicates
 			    				
 				JSONObject row = new JSONObject();
@@ -206,15 +205,11 @@ public class UpdateReceiver extends BroadcastReceiver {
 				}
 
 				data.put(row);
-				if (!(deletionMarker.length() == 0))
-					deletionMarker += ", ";
-				deletionMarker += Long.toString(cursor.getLong(0));
-				
-                previousTimestamp = cursor.getLong(0);
-		
+				markings.put(cursor.getLong(0), 1) ;
+						
 			} while (cursor.moveToNext());
 
-            LocationUtils.removeJitter(data);
+            //LocationUtils.removeJitter(data, markings);
             if (data.length() == 0) {
                 Log.d(DEBUG_TAG, "AsyncHttp: filtered out as jitter. Skipping transfer");
                 return null;
@@ -291,7 +286,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 				//deletionMarker = deletionMarker;
 				break;
 			default:
-				deletionMarker = "Error: " + response.getStatusLine();
+				markings = null;  // "Error: " + response.getStatusLine();
 				break;
 			}
 	
@@ -306,16 +301,16 @@ public class UpdateReceiver extends BroadcastReceiver {
 			}
 	
 			/* mark rows in SQLite as done */
-			if (deletionMarker != null && deletionMarker.length() > 0 && !deletionMarker.equals("0") && !deletionMarker.startsWith("Error")) {
+			if (markings.length() > 0) {
 				db.dbhelper.open_w();
-				Log.d(DEBUG_TAG, "AsyncHttp: marking as done: " + deletionMarker);
-				db.dbhelper.markDone(deletionMarker);
+				Log.d(DEBUG_TAG, "AsyncHttp: marking as done.");
+				db.dbhelper.markDone(markings);
 				db.dbhelper.close();
 			}
 	
 			// TODO: Refresh webview?
 	
-			return deletionMarker;
+			return "done";
 		}
 	
 		@Override

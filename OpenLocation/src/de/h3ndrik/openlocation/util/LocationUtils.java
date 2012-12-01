@@ -5,11 +5,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.h3ndrik.openlocation.DBAdapter;
+import de.h3ndrik.openlocation.DBAdapter.Markings;
 
 import android.location.Location;
 
 public class LocationUtils {
-    public static void removeJitter(JSONArray data) {
+    public static void removeJitter(JSONArray data, Markings markings) {
         if (data.length() < 3)  return;  // skip if we don't have enough data for this algorithm
         
         /* prepare location array */
@@ -36,17 +37,25 @@ public class LocationUtils {
             }
         }
         
-        /* remove jitter */
+        
         for (Integer i = 1; i < data.length()-1; i++) {  // without first last element
+        	/* remove jitter */
             if (location[i-1].distanceTo(location[i+1]) < location[i-1].getAccuracy()
              || location[i-1].distanceTo(location[i+1]) < location[i+1].getAccuracy())  // i-1 and i+1 are close
                 if (location[i].distanceTo(location[i-1]) > location[i-1].getAccuracy()
                  && location[i].distanceTo(location[i+1]) > location[i+1].getAccuracy())  // but not i
                 {
                     location[i].setProvider(location[i].getProvider() + "/jitter");
+                    try {
+						data.put(i, null);
+					}
+					catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                     // location[i].reset();
                     // location[i] = null;
-                    // TODO: mark in sqlite (like deletionMarker?)
+                    markings.setMarkingAt(i, 2);
                 }
         }
     }

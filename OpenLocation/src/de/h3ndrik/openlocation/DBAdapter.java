@@ -1,5 +1,6 @@
 package de.h3ndrik.openlocation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -62,6 +63,44 @@ public class DBAdapter {
 
 	public DBAdapter(Context context) {
 		dbhelper = new DBHelper(context);
+	}
+	
+	public class Markings {
+		protected Marking[] array;
+		protected Integer currentindex = 0;
+		protected class Marking {
+			public Long time;
+			public Integer value;
+		}
+		public Markings(Integer size) {
+			array = new Marking[size];
+			currentindex = 0;
+
+		}
+		public void put(Long time, Integer value) {
+			Marking marking = new Marking();
+			array[currentindex] = marking;
+			array[currentindex].time = time;
+			array[currentindex].value = value;
+			currentindex++;
+		}
+		public Long getPreviousTimestamp() {
+			if (currentindex < 1) return null;
+			return array[currentindex-1].time;
+		}
+		public Long getTimeAt(Integer i) {
+			return array[i].time;
+		}
+		public Integer getMarkingAt(Integer i) {
+			return array[i].value;
+		}
+		public Integer length() {
+			return currentindex;
+		}
+		public void setMarkingAt(Integer i, Integer value) {
+			array[i].value = value;
+		}
+		
 	}
 
 	public class DBHelper extends SQLiteOpenHelper {
@@ -162,12 +201,16 @@ public class DBAdapter {
 					null, null, null, null, null, null);
 		}
 
-		public void markDone(LinkedHashMap<Long, Integer> args) {
+		public void markDone(Markings markings) {
 			ContentValues values = new ContentValues();
-			values.put(DBAdapter.LocationCacheContract.COLUMN_UPLOADED, 1);
-			db.update(DBAdapter.LocationCacheContract.TABLE_NAME, values,
-					DBAdapter.LocationCacheContract.COLUMN_TIME + " IN (" + arg
-							+ ")", null);
+			for (Integer i = 0; i < markings.length(); i++) {
+				if (markings.getTimeAt(i) == null || markings.getTimeAt(i) == 0)
+					continue;
+				values.clear();
+				values.put(DBAdapter.LocationCacheContract.COLUMN_UPLOADED, markings.getMarkingAt(i));
+				db.update(DBAdapter.LocationCacheContract.TABLE_NAME, values,
+						DBAdapter.LocationCacheContract.COLUMN_TIME + " IN (" + markings.getTimeAt(i) + ")", null);
+			}
 		}
 
 		public void deleteLocations(String arg) {
