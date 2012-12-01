@@ -1,5 +1,8 @@
 package de.h3ndrik.openlocation;
 
+import java.util.HashMap;
+import java.util.List;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -159,7 +162,7 @@ public class DBAdapter {
 					null, null, null, null, null, null);
 		}
 
-		public void markDone(String arg) {
+		public void markDone(LinkedHashMap<Long, Integer> args) {
 			ContentValues values = new ContentValues();
 			values.put(DBAdapter.LocationCacheContract.COLUMN_UPLOADED, 1);
 			db.update(DBAdapter.LocationCacheContract.TABLE_NAME, values,
