@@ -31,6 +31,7 @@ v0.3 (Alpha)
 - still multiple asynchttptransfers? (Android) *in progress*
 - Remove location jitter (Android) *in progress*
 - handling ':' and '-' in usernames (PHP) *in progress*
+- give user-tables a prefix!! (PHP)
 - refactor & clean code (Android)
 - (auto)clean locationcache (Android)
 - helper class for server api (Android)

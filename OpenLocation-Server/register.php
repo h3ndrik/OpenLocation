@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     echo "<div class=\"errorbox\">Wrong Host! Expected: ...@" . $_SERVER['HTTP_HOST'] . "</div>\nPlease register at <a href=\"http://" . $domain . "\">http://" . $domain . "</a>.\n";
     displayForm();
   }
-  else if ((strlen($_POST["password"]) < 3) || (strlen($_POST["username"]) > 32)) {
+  else if ((strlen($_POST["password"]) < 3) || (strlen($_POST["username"]) > 32) || $_POST["username"] == "users") {
     echo "<div class=\"errorbox\">Password not acceptable!</div>";
     displayForm();
   }
