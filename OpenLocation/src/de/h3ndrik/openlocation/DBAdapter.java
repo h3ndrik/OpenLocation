@@ -235,7 +235,7 @@ public class DBAdapter {
 					"time DESC", "1");
 			cursor.moveToFirst();
 			if (cursor.getCount() == 1) {
-				Location location = new Location("removeJitter");
+				Location location = new Location(cursor.getString(7));
                 location.setTime(cursor.getLong(0));
                 location.setLatitude(cursor.getDouble(1));
                 location.setLongitude(cursor.getDouble(2));
@@ -268,7 +268,7 @@ public class DBAdapter {
 					"time DESC", "1");
 			cursor.moveToFirst();
 			if (cursor.getCount() == 1) {
-				Location location = new Location("removeJitter");
+				Location location = new Location(cursor.getString(7));
                 location.setTime(cursor.getLong(0));
                 location.setLatitude(cursor.getDouble(1));
                 location.setLongitude(cursor.getDouble(2));

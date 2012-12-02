@@ -43,10 +43,10 @@ public class LocationUtils {
 	        for (Integer i = 1; i < location.length-1; i++) {  // without first and last element
 	        	
 	        	/* remove when we have better data in interval */
-	            if (location[i].getTime()-location[lastSane].getTime() < 15 * 60 * 1000 / 2
-	             || location[i+1].getTime()-location[i].getTime() < 15 * 60 * 1000 / 2) {
-	            	if (location[i].getAccuracy() > location[lastSane].getAccuracy()*3
-	            	 || location[i].getAccuracy() > location[i+1].getAccuracy()*3)
+	            if (location[i].getTime()-location[lastSane].getTime() < 15 * 60 * 1000	// if lastSane is in interval
+	            		&& location[i].getAccuracy() > location[lastSane].getAccuracy()*3		// and has better~ accuracy
+	             || location[i+1].getTime()-location[i].getTime() < 15 * 60 * 1000
+	              		&& location[i].getAccuracy() > location[i+1].getAccuracy()*3) {
 	                {
 	                    location[i].setProvider(location[i].getProvider() + "/jitter");
 	                    try {
@@ -105,7 +105,34 @@ public class LocationUtils {
 	            	lastSane++;
 	            }
 	        }
+	        
+	        /* Last/Current position is not sane */
+	        if (location[location.length-1].getTime()-location[lastSane].getTime() < 15 * 60 * 1000			// if lastSane is in interval
+	        		&& location[location.length-1].getAccuracy() > location[lastSane].getAccuracy()*3) {	// and is significantly better
+                location[location.length-1].setProvider(location[location.length-1].getProvider() + "/jitter");
+                try {
+    				JSONObject newloc = new JSONObject();
+    				newloc.put(DBAdapter.Contract.COLUMN_TIME, Long.toString(location[location.length-1].getTime()));
+    				newloc.put(DBAdapter.Contract.COLUMN_LATITUDE, Double.toString(location[location.length-1].getLatitude()));
+    				newloc.put(DBAdapter.Contract.COLUMN_LONGITUDE, Double.toString(location[location.length-1].getLongitude()));
+    				newloc.put(DBAdapter.Contract.COLUMN_ALTITUDE, Double.toString(location[location.length-1].getAltitude()));
+    				newloc.put(DBAdapter.Contract.COLUMN_ACCURACY, Float.toString(location[location.length-1].getAccuracy()));
+    				newloc.put(DBAdapter.Contract.COLUMN_SPEED, Float.toString(location[location.length-1].getSpeed()));
+    				newloc.put(DBAdapter.Contract.COLUMN_BEARING, Float.toString(location[location.length-1].getBearing()));
+    				newloc.put(DBAdapter.Contract.COLUMN_PROVIDER, location[location.length-1].getProvider());
+
+					data.put(location.length-1-1, newloc);
+				}
+				catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                // location[i].reset();
+                // location[i] = null;
+                markings.setMarkingAt(location.length-1-1, DBAdapter.Contract.MARKED_JITTER);
+	        }
         }
+        location = null;
     }
 
 }
