@@ -81,7 +81,7 @@ function getfriendtoken($user, $friend) {
     foreach ($friendsandtokens as $friendandtoken) {
       if (!empty($friendandtoken) && strpos($friendandtoken, $friend) === 0) {
         //if (strrpos($friend, "-")) $token = substr($friend, strrpos($friend, "-")+1);
-        if (strrpos($friendandtoken, ":")) $token = substr($friendandtoken, strrpos($friendandtoken, ":")+1);
+        if ($friendandtoken[strlen($friendandtoken)-33] == ":") $token = substr($friendandtoken, strlen($friendandtoken)-33+1);
       }
     }
     mysql_free_result($result);

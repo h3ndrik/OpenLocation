@@ -27,9 +27,10 @@ v0.2 (Alpha) *done*
 
 v0.3 (Alpha)
 -----------
-- dig out progress bar (from underneath title bar) (Android)
-- still multiple asynchttptransfers? (Android)
-- handling ':' and '-' in usernames (PHP)
+- dig out progress bar (from underneath title bar) (Android) *wtf?*
+- still multiple asynchttptransfers? (Android) *in progress*
+- Remove location jitter (Android) *in progress*
+- handling ':' and '-' in usernames (PHP) *in progress*
 - refactor & clean code (Android)
 - (auto)clean locationcache (Android)
 - helper class for server api (Android)
@@ -92,7 +93,6 @@ v1.0
 
 later
 -----
-- Remove location jitter
 - Fake position
 - custom update intervals etc. (Android)
 - Delete user (PHP)

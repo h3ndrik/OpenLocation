@@ -125,20 +125,20 @@ function getfriends($user_local) {
     $friendsandtokens = explode(",", $row['friends']);
     $i = 0; $j = 0;
     foreach ($friendsandtokens as $friend) {
-      if (!empty($friend) && strrpos($friend, ":")) {
-        $data[$i] = substr($friend, 0, strrpos($friend, ":"));
+      if (!empty($friend) && $friend[strlen($friend)-33] == ":") {
+        $data[$i] = substr($friend, 0, strlen($friend)-33);
         $i++;
       }
-      elseif (!empty($friend) && strrpos($friend, "-")) {
-        $data_incoming[$j] = substr($friend, 0, strrpos($friend, "-"));
+      elseif (!empty($friend) && $friend[strlen($friend)-33] == "-") {
+        $data_incoming[$j] = substr($friend, 0, strlen($friend)-33);
         $j++;
       }
     }
     $incomingandtokens = explode(",", $row['authorized']);
     $k = 0;
     foreach ($incomingandtokens as $friend) {
-      if (!empty($friend) && strrpos($friend, "-")) {
-        $data_pending[$k] = substr($friend, 0, strrpos($friend, "-"));
+      if (!empty($friend) && $friend[strlen($friend)-33] == "-") {
+        $data_pending[$k] = substr($friend, 0, strlen($friend)-33);
         $k++;
       }
     }
