@@ -47,11 +47,16 @@ public class UpdateReceiver extends BroadcastReceiver {
 			DBAdapter db = new DBAdapter(context);
 			db.dbhelper.open_r();
 
-			if (db.dbhelper.lastUpdateMillis() < System.currentTimeMillis() - 15 * 60 * 1000) {
+			if (db.dbhelper.getCurrentLocation() == null) {
+				Log.d(DEBUG_TAG, "Database is empty");
+				return;
+			}
+			
+			if (db.dbhelper.getCurrentLocation().getTime() < System.currentTimeMillis() - 15 * 60 * 1000) {
 				LocationReceiver.doActiveUpdate(context, true);
 			}
 			else {
-				Log.d(DEBUG_TAG, "Last update " + (System.currentTimeMillis() - db.dbhelper.lastUpdateMillis())/1000 + "sec ago, skipping active location update");
+				Log.d(DEBUG_TAG, "Last update " + (System.currentTimeMillis() - db.dbhelper.getCurrentLocation().getTime())/1000 + "sec ago, skipping active location update");
 			}
 			db.dbhelper.close();
 			
@@ -208,8 +213,8 @@ public class UpdateReceiver extends BroadcastReceiver {
 				markings.put(cursor.getLong(0), DBAdapter.Contract.MARKED_UPLOADED);
 						
 			} while (cursor.moveToNext());
-
-            LocationUtils.removeJitter(data, markings);
+			
+            LocationUtils.removeJitter(data, markings, db.dbhelper.getLastUploadedLocation());
             if (data.length() == 0) {
                 Log.d(DEBUG_TAG, "AsyncHttp: filtered out as jitter. Skipping transfer");
                 return null;

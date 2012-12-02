@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Location;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -218,22 +219,70 @@ public class DBAdapter {
 							+ ")", null);
 		}
 
-		public long lastUpdateMillis() {
+		public Location getCurrentLocation() {
 			Cursor cursor = db.query(false,
 					DBAdapter.Contract.TABLE_NAME,
-					new String[] { "time" }, null, null, null, null,
+					new String[] {
+						DBAdapter.Contract.COLUMN_TIME,
+						DBAdapter.Contract.COLUMN_LATITUDE,
+						DBAdapter.Contract.COLUMN_LONGITUDE,
+						DBAdapter.Contract.COLUMN_ALTITUDE,
+						DBAdapter.Contract.COLUMN_ACCURACY,
+						DBAdapter.Contract.COLUMN_SPEED,
+						DBAdapter.Contract.COLUMN_BEARING,
+						DBAdapter.Contract.COLUMN_PROVIDER
+						}, null, null, null, null,
 					"time DESC", "1");
-			// Cursor cursor = db.rawQuery("SELECT time FROM " +
-			// DBAdapter.LocationCacheContract.TABLE_NAME +
-			// " ORDER BY time DESC LIMIT 1", null);
 			cursor.moveToFirst();
 			if (cursor.getCount() == 1) {
-				return cursor.getLong(0);
+				Location location = new Location("removeJitter");
+                location.setTime(cursor.getLong(0));
+                location.setLatitude(cursor.getDouble(1));
+                location.setLongitude(cursor.getDouble(2));
+                location.setAltitude(cursor.getDouble(3));
+                location.setAccuracy(cursor.getFloat(4));
+                location.setSpeed(cursor.getFloat(5));
+                location.setBearing(cursor.getFloat(6));
+                location.setProvider(cursor.getString(7));
+				return location;
 			} else
 				Log.d(DEBUG_TAG,
-						"lastUpdate(): Expected 1 row, got "
+						"getCurrentLocation(): Expected 1 row, got "
 								+ Integer.toString(cursor.getCount()));
-			return -1;
+			return null;
+		}
+		
+		public Location getLastUploadedLocation() {
+			Cursor cursor = db.query(false,
+					DBAdapter.Contract.TABLE_NAME,
+					new String[] {
+						DBAdapter.Contract.COLUMN_TIME,
+						DBAdapter.Contract.COLUMN_LATITUDE,
+						DBAdapter.Contract.COLUMN_LONGITUDE,
+						DBAdapter.Contract.COLUMN_ALTITUDE,
+						DBAdapter.Contract.COLUMN_ACCURACY,
+						DBAdapter.Contract.COLUMN_SPEED,
+						DBAdapter.Contract.COLUMN_BEARING,
+						DBAdapter.Contract.COLUMN_PROVIDER
+						}, DBAdapter.Contract.COLUMN_UPLOADED + "= 1", null, null, null,
+					"time DESC", "1");
+			cursor.moveToFirst();
+			if (cursor.getCount() == 1) {
+				Location location = new Location("removeJitter");
+                location.setTime(cursor.getLong(0));
+                location.setLatitude(cursor.getDouble(1));
+                location.setLongitude(cursor.getDouble(2));
+                location.setAltitude(cursor.getDouble(3));
+                location.setAccuracy(cursor.getFloat(4));
+                location.setSpeed(cursor.getFloat(5));
+                location.setBearing(cursor.getFloat(6));
+                location.setProvider(cursor.getString(7));
+				return location;
+			} else
+				Log.d(DEBUG_TAG,
+						"getCurrentLocation(): Expected 1 row, got "
+								+ Integer.toString(cursor.getCount()));
+			return null;
 		}
 	}
 }
