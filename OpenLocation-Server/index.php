@@ -126,7 +126,7 @@ map.on('locationerror', onLocationError);
   connectToMySQL();
   $starttime = (string)(time()*1000-86400000);
   $endtime = (string)(time()*1000);
-  $query = "SELECT * FROM " . mysql_real_escape_string($user) . "  WHERE time > " . mysql_real_escape_string($starttime) . " AND time < " . mysql_real_escape_string($endtime) . " ORDER BY time ASC;";
+  $query = "SELECT * FROM " . mysql_real_escape_string($user) . "  WHERE time > " . mysql_real_escape_string($starttime) . " AND time < " . mysql_real_escape_string($endtime) . " AND provider NOT LIKE '%jitter%' ORDER BY time ASC;";
   $result = mysql_query($query) or die500("MySQL Error (SELECT): " . mysql_error());
 
   if (mysql_num_rows($result) != false && mysql_num_rows($result) > 0) {
