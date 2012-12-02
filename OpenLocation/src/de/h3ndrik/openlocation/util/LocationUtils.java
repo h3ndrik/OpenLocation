@@ -19,14 +19,14 @@ public class LocationUtils {
             try {
                 JSONObject row = data.getJSONObject(i);
                 location[i] = new Location("removeJitter");
-                location[i].setTime(Long.valueOf(row.getString(DBAdapter.LocationCacheContract.COLUMN_TIME)).longValue());
-                location[i].setLatitude(Double.valueOf(row.getString(DBAdapter.LocationCacheContract.COLUMN_LATITUDE)).doubleValue());
-                location[i].setLongitude(Double.valueOf(row.getString(DBAdapter.LocationCacheContract.COLUMN_LONGITUDE)).doubleValue());
-                location[i].setAltitude(Double.valueOf(row.getString(DBAdapter.LocationCacheContract.COLUMN_ALTITUDE)).doubleValue());
-                location[i].setAccuracy(Float.valueOf(row.getString(DBAdapter.LocationCacheContract.COLUMN_ACCURACY)).floatValue());
-                location[i].setSpeed(Float.valueOf(row.getString(DBAdapter.LocationCacheContract.COLUMN_SPEED)).floatValue());
-                location[i].setBearing(Float.valueOf(row.getString(DBAdapter.LocationCacheContract.COLUMN_BEARING)).floatValue());
-                location[i].setProvider(row.getString(DBAdapter.LocationCacheContract.COLUMN_PROVIDER));
+                location[i].setTime(Long.valueOf(row.getString(DBAdapter.Contract.COLUMN_TIME)).longValue());
+                location[i].setLatitude(Double.valueOf(row.getString(DBAdapter.Contract.COLUMN_LATITUDE)).doubleValue());
+                location[i].setLongitude(Double.valueOf(row.getString(DBAdapter.Contract.COLUMN_LONGITUDE)).doubleValue());
+                location[i].setAltitude(Double.valueOf(row.getString(DBAdapter.Contract.COLUMN_ALTITUDE)).doubleValue());
+                location[i].setAccuracy(Float.valueOf(row.getString(DBAdapter.Contract.COLUMN_ACCURACY)).floatValue());
+                location[i].setSpeed(Float.valueOf(row.getString(DBAdapter.Contract.COLUMN_SPEED)).floatValue());
+                location[i].setBearing(Float.valueOf(row.getString(DBAdapter.Contract.COLUMN_BEARING)).floatValue());
+                location[i].setProvider(row.getString(DBAdapter.Contract.COLUMN_PROVIDER));
             }
             catch (JSONException e) {
                 // TODO Auto-generated catch block
@@ -55,7 +55,7 @@ public class LocationUtils {
 					}
                     // location[i].reset();
                     // location[i] = null;
-                    markings.setMarkingAt(i, 2);
+                    markings.setMarkingAt(i, DBAdapter.Contract.MARKED_JITTER);
                 }
         }
     }

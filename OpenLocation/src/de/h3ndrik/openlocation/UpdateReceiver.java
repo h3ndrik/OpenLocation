@@ -183,21 +183,21 @@ public class UpdateReceiver extends BroadcastReceiver {
 		
 				try {
 
-					row.put(DBAdapter.LocationCacheContract.COLUMN_TIME,
+					row.put(DBAdapter.Contract.COLUMN_TIME,
 							Long.toString(cursor.getLong(0)));
-					row.put(DBAdapter.LocationCacheContract.COLUMN_LATITUDE,
+					row.put(DBAdapter.Contract.COLUMN_LATITUDE,
 							Double.toString(cursor.getDouble(1)));
-					row.put(DBAdapter.LocationCacheContract.COLUMN_LONGITUDE,
+					row.put(DBAdapter.Contract.COLUMN_LONGITUDE,
 							Double.toString(cursor.getDouble(2)));
-					row.put(DBAdapter.LocationCacheContract.COLUMN_ALTITUDE,
+					row.put(DBAdapter.Contract.COLUMN_ALTITUDE,
 							Double.toString(cursor.getDouble(3)));
-					row.put(DBAdapter.LocationCacheContract.COLUMN_ACCURACY,
+					row.put(DBAdapter.Contract.COLUMN_ACCURACY,
 							Float.toString(cursor.getFloat(4)));
-					row.put(DBAdapter.LocationCacheContract.COLUMN_SPEED,
+					row.put(DBAdapter.Contract.COLUMN_SPEED,
 							Float.toString(cursor.getFloat(5)));
-					row.put(DBAdapter.LocationCacheContract.COLUMN_BEARING,
+					row.put(DBAdapter.Contract.COLUMN_BEARING,
 							Float.toString(cursor.getFloat(6)));
-					row.put(DBAdapter.LocationCacheContract.COLUMN_PROVIDER,
+					row.put(DBAdapter.Contract.COLUMN_PROVIDER,
 							cursor.getString(7));
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -205,11 +205,11 @@ public class UpdateReceiver extends BroadcastReceiver {
 				}
 
 				data.put(row);
-				markings.put(cursor.getLong(0), 1) ;
+				markings.put(cursor.getLong(0), DBAdapter.Contract.MARKED_UPLOADED);
 						
 			} while (cursor.moveToNext());
 
-            //LocationUtils.removeJitter(data, markings);
+            LocationUtils.removeJitter(data, markings);
             if (data.length() == 0) {
                 Log.d(DEBUG_TAG, "AsyncHttp: filtered out as jitter. Skipping transfer");
                 return null;

@@ -1,9 +1,5 @@
 package de.h3ndrik.openlocation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,7 +12,7 @@ import android.util.Log;
 public class DBAdapter {
 	private static final String DEBUG_TAG = "DBAdapter"; // for logging purposes
 
-	public static abstract class LocationCacheContract implements BaseColumns {
+	public static abstract class Contract implements BaseColumns {
 
 		public static final String TABLE_NAME = "locationsCache";
 		public static final String COLUMN_TIME = "time";
@@ -28,32 +24,35 @@ public class DBAdapter {
 		public static final String COLUMN_BEARING = "bearing";
 		public static final String COLUMN_PROVIDER = "provider";
 		public static final String COLUMN_UPLOADED = "uploaded";
+		
+		public static final Integer MARKED_UPLOADED = 1;
+		public static final Integer MARKED_JITTER = 2;
 
 		private static final String COMMA_SEP = ", ";
 		private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
-				+ DBAdapter.LocationCacheContract.TABLE_NAME + " ("
-				+ DBAdapter.LocationCacheContract._ID
+				+ DBAdapter.Contract.TABLE_NAME + " ("
+				+ DBAdapter.Contract._ID
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT" + COMMA_SEP
-				+ DBAdapter.LocationCacheContract.COLUMN_TIME + " BIGINT"
-				+ COMMA_SEP + DBAdapter.LocationCacheContract.COLUMN_LATITUDE
+				+ DBAdapter.Contract.COLUMN_TIME + " BIGINT"
+				+ COMMA_SEP + DBAdapter.Contract.COLUMN_LATITUDE
 				+ " DOUBLE" + COMMA_SEP
-				+ DBAdapter.LocationCacheContract.COLUMN_LONGITUDE + " DOUBLE"
-				+ COMMA_SEP + DBAdapter.LocationCacheContract.COLUMN_ALTITUDE
+				+ DBAdapter.Contract.COLUMN_LONGITUDE + " DOUBLE"
+				+ COMMA_SEP + DBAdapter.Contract.COLUMN_ALTITUDE
 				+ " DOUBLE" + COMMA_SEP
-				+ DBAdapter.LocationCacheContract.COLUMN_ACCURACY + " FLOAT"
-				+ COMMA_SEP + DBAdapter.LocationCacheContract.COLUMN_SPEED
+				+ DBAdapter.Contract.COLUMN_ACCURACY + " FLOAT"
+				+ COMMA_SEP + DBAdapter.Contract.COLUMN_SPEED
 				+ " FLOAT" + COMMA_SEP
-				+ DBAdapter.LocationCacheContract.COLUMN_BEARING + " FLOAT"
-				+ COMMA_SEP + DBAdapter.LocationCacheContract.COLUMN_PROVIDER
+				+ DBAdapter.Contract.COLUMN_BEARING + " FLOAT"
+				+ COMMA_SEP + DBAdapter.Contract.COLUMN_PROVIDER
 				+ " TEXT" + COMMA_SEP
-				+ DBAdapter.LocationCacheContract.COLUMN_UPLOADED + " INT"
+				+ DBAdapter.Contract.COLUMN_UPLOADED + " INT"
 				+ " )";
 
 		private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
-				+ DBAdapter.LocationCacheContract.TABLE_NAME;
+				+ DBAdapter.Contract.TABLE_NAME;
 
 		// Prevents the Contract class from being instantiated.
-		private LocationCacheContract() {
+		private Contract() {
 		}
 
 	}
@@ -116,7 +115,7 @@ public class DBAdapter {
 		}
 
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(DBAdapter.LocationCacheContract.SQL_CREATE_ENTRIES);
+			db.execSQL(DBAdapter.Contract.SQL_CREATE_ENTRIES);
 			Log.d(DEBUG_TAG, "Database created");
 		}
 
@@ -124,7 +123,7 @@ public class DBAdapter {
 			// This database is only a cache for online data, so its upgrade
 			// policy is
 			// to simply to discard the data and start over
-			db.execSQL(DBAdapter.LocationCacheContract.SQL_DELETE_ENTRIES);
+			db.execSQL(DBAdapter.Contract.SQL_DELETE_ENTRIES);
 			onCreate(db);
 		}
 
@@ -152,52 +151,52 @@ public class DBAdapter {
 				double longitude, double altitude, float accuracy, float speed,
 				float bearing, String provider) {
 			ContentValues values = new ContentValues();
-			values.put(DBAdapter.LocationCacheContract.COLUMN_TIME, time);
-			values.put(DBAdapter.LocationCacheContract.COLUMN_LATITUDE,
+			values.put(DBAdapter.Contract.COLUMN_TIME, time);
+			values.put(DBAdapter.Contract.COLUMN_LATITUDE,
 					latitude);
-			values.put(DBAdapter.LocationCacheContract.COLUMN_LONGITUDE,
+			values.put(DBAdapter.Contract.COLUMN_LONGITUDE,
 					longitude);
-			values.put(DBAdapter.LocationCacheContract.COLUMN_ALTITUDE,
+			values.put(DBAdapter.Contract.COLUMN_ALTITUDE,
 					altitude);
-			values.put(DBAdapter.LocationCacheContract.COLUMN_ACCURACY,
+			values.put(DBAdapter.Contract.COLUMN_ACCURACY,
 					accuracy);
-			values.put(DBAdapter.LocationCacheContract.COLUMN_SPEED, speed);
-			values.put(DBAdapter.LocationCacheContract.COLUMN_BEARING, bearing);
-			values.put(DBAdapter.LocationCacheContract.COLUMN_PROVIDER,
+			values.put(DBAdapter.Contract.COLUMN_SPEED, speed);
+			values.put(DBAdapter.Contract.COLUMN_BEARING, bearing);
+			values.put(DBAdapter.Contract.COLUMN_PROVIDER,
 					provider);
-			values.put(DBAdapter.LocationCacheContract.COLUMN_UPLOADED, 0);
-			return db.insert(DBAdapter.LocationCacheContract.TABLE_NAME, null,
+			values.put(DBAdapter.Contract.COLUMN_UPLOADED, 0);
+			return db.insert(DBAdapter.Contract.TABLE_NAME, null,
 					values);
 		}
 
 		public Cursor getLocalLocations() {
 			// TODO: getReadableDatabase() ?
-			return db.query(DBAdapter.LocationCacheContract.TABLE_NAME,
-					new String[] { DBAdapter.LocationCacheContract.COLUMN_TIME,
-							DBAdapter.LocationCacheContract.COLUMN_LATITUDE,
-							DBAdapter.LocationCacheContract.COLUMN_LONGITUDE,
-							DBAdapter.LocationCacheContract.COLUMN_ALTITUDE,
-							DBAdapter.LocationCacheContract.COLUMN_ACCURACY,
-							DBAdapter.LocationCacheContract.COLUMN_SPEED,
-							DBAdapter.LocationCacheContract.COLUMN_BEARING,
-							DBAdapter.LocationCacheContract.COLUMN_PROVIDER,
-							DBAdapter.LocationCacheContract.COLUMN_UPLOADED },
-					DBAdapter.LocationCacheContract.COLUMN_UPLOADED + "= 0",
+			return db.query(DBAdapter.Contract.TABLE_NAME,
+					new String[] { DBAdapter.Contract.COLUMN_TIME,
+							DBAdapter.Contract.COLUMN_LATITUDE,
+							DBAdapter.Contract.COLUMN_LONGITUDE,
+							DBAdapter.Contract.COLUMN_ALTITUDE,
+							DBAdapter.Contract.COLUMN_ACCURACY,
+							DBAdapter.Contract.COLUMN_SPEED,
+							DBAdapter.Contract.COLUMN_BEARING,
+							DBAdapter.Contract.COLUMN_PROVIDER,
+							DBAdapter.Contract.COLUMN_UPLOADED },
+					DBAdapter.Contract.COLUMN_UPLOADED + "= 0",
 					null, null, null, null, null);
 		}
 
 		public Cursor getAllLocations() {
 			// TODO: getReadableDatabase() ?
-			return db.query(DBAdapter.LocationCacheContract.TABLE_NAME,
-					new String[] { DBAdapter.LocationCacheContract.COLUMN_TIME,
-							DBAdapter.LocationCacheContract.COLUMN_LATITUDE,
-							DBAdapter.LocationCacheContract.COLUMN_LONGITUDE,
-							DBAdapter.LocationCacheContract.COLUMN_ALTITUDE,
-							DBAdapter.LocationCacheContract.COLUMN_ACCURACY,
-							DBAdapter.LocationCacheContract.COLUMN_SPEED,
-							DBAdapter.LocationCacheContract.COLUMN_BEARING,
-							DBAdapter.LocationCacheContract.COLUMN_PROVIDER,
-							DBAdapter.LocationCacheContract.COLUMN_UPLOADED },
+			return db.query(DBAdapter.Contract.TABLE_NAME,
+					new String[] { DBAdapter.Contract.COLUMN_TIME,
+							DBAdapter.Contract.COLUMN_LATITUDE,
+							DBAdapter.Contract.COLUMN_LONGITUDE,
+							DBAdapter.Contract.COLUMN_ALTITUDE,
+							DBAdapter.Contract.COLUMN_ACCURACY,
+							DBAdapter.Contract.COLUMN_SPEED,
+							DBAdapter.Contract.COLUMN_BEARING,
+							DBAdapter.Contract.COLUMN_PROVIDER,
+							DBAdapter.Contract.COLUMN_UPLOADED },
 					null, null, null, null, null, null);
 		}
 
@@ -207,21 +206,21 @@ public class DBAdapter {
 				if (markings.getTimeAt(i) == null || markings.getTimeAt(i) == 0)
 					continue;
 				values.clear();
-				values.put(DBAdapter.LocationCacheContract.COLUMN_UPLOADED, markings.getMarkingAt(i));
-				db.update(DBAdapter.LocationCacheContract.TABLE_NAME, values,
-						DBAdapter.LocationCacheContract.COLUMN_TIME + " IN (" + markings.getTimeAt(i) + ")", null);
+				values.put(DBAdapter.Contract.COLUMN_UPLOADED, markings.getMarkingAt(i));
+				db.update(DBAdapter.Contract.TABLE_NAME, values,
+						DBAdapter.Contract.COLUMN_TIME + " IN (" + markings.getTimeAt(i) + ")", null);
 			}
 		}
 
 		public void deleteLocations(String arg) {
-			db.delete(DBAdapter.LocationCacheContract.TABLE_NAME,
-					DBAdapter.LocationCacheContract.COLUMN_TIME + " IN (" + arg
+			db.delete(DBAdapter.Contract.TABLE_NAME,
+					DBAdapter.Contract.COLUMN_TIME + " IN (" + arg
 							+ ")", null);
 		}
 
 		public long lastUpdateMillis() {
 			Cursor cursor = db.query(false,
-					DBAdapter.LocationCacheContract.TABLE_NAME,
+					DBAdapter.Contract.TABLE_NAME,
 					new String[] { "time" }, null, null, null, null,
 					"time DESC", "1");
 			// Cursor cursor = db.rawQuery("SELECT time FROM " +
