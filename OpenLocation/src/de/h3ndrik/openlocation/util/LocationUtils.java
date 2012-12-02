@@ -12,7 +12,7 @@ import android.location.Location;
 public class LocationUtils {
     public static void removeJitter(JSONArray data, Markings markings, Location lastUploadedLocation) {
         
-        /* prepare location array */
+        /* prepare location array, element 0 is last uploaded location */
         Location[] location = new Location[data.length()+1];
         
         location[0] = lastUploadedLocation;
@@ -39,12 +39,13 @@ public class LocationUtils {
         }
         
         if (location.length >= 3)  {  // skip if we don't have enough data for this algorithm
+        	Integer lastSane = 0;
 	        for (Integer i = 1; i < location.length-1; i++) {  // without first and last element
 	        	
 	        	/* remove when we have better data in interval */
-	            if (location[i].getTime()-location[i-1].getTime() < 15 * 60 * 1000 / 2
-	             || location[i+1].getTime()-location[i].getTime() < 15 * 60 * 1000 / 2)
-	            	if (location[i].getAccuracy() > location[i-1].getAccuracy()*3
+	            if (location[i].getTime()-location[lastSane].getTime() < 15 * 60 * 1000 / 2
+	             || location[i+1].getTime()-location[i].getTime() < 15 * 60 * 1000 / 2) {
+	            	if (location[i].getAccuracy() > location[lastSane].getAccuracy()*3
 	            	 || location[i].getAccuracy() > location[i+1].getAccuracy()*3)
 	                {
 	                    location[i].setProvider(location[i].getProvider() + "/jitter");
@@ -69,11 +70,12 @@ public class LocationUtils {
 	                    // location[i] = null;
 	                    markings.setMarkingAt(i-1, DBAdapter.Contract.MARKED_JITTER);
 	                }
+	            }
 	        	
 	        	/* remove single spikes */
-	            if (location[i-1].distanceTo(location[i+1]) < location[i-1].getAccuracy()
-	             || location[i-1].distanceTo(location[i+1]) < location[i+1].getAccuracy())  // i-1 and i+1 are close
-	                if (location[i].distanceTo(location[i-1]) > location[i-1].getAccuracy()
+	            else if (location[lastSane].distanceTo(location[i+1]) < location[lastSane].getAccuracy()
+	             || location[lastSane].distanceTo(location[i+1]) < location[i+1].getAccuracy())  { // i-1 and i+1 are close
+	                if (location[i].distanceTo(location[lastSane]) > location[lastSane].getAccuracy()
 	                 && location[i].distanceTo(location[i+1]) > location[i+1].getAccuracy())  // but not i
 	                {
 	                    location[i].setProvider(location[i].getProvider() + "/jitter");
@@ -98,6 +100,10 @@ public class LocationUtils {
 	                    // location[i] = null;
 	                    markings.setMarkingAt(i-1, DBAdapter.Contract.MARKED_JITTER);
 	                }
+	            }
+	            else {
+	            	lastSane++;
+	            }
 	        }
         }
     }
