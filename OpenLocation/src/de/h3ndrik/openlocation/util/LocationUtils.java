@@ -41,14 +41,18 @@ public class LocationUtils {
         if (location.length >= 3)  {  // skip if we don't have enough data for this algorithm
         	Integer lastSane = 0;
 	        for (Integer i = 1; i < location.length-1; i++) {  // without first and last element
-	        	
-	        	/* remove when we have better data in interval */
+	        	if (lastSane == 0 && location[lastSane] == null) {
+	        		lastSane = 1;
+	        		continue;  // skip nullpointerexception if nothing is uploaded yet
+	        	}
+
+	        	/* remove when neighbors have significantly better accuracy */
 	            if (location[i].getTime()-location[lastSane].getTime() < 15 * 60 * 1000	// if lastSane is in interval
 	            		&& location[i].getAccuracy() > location[lastSane].getAccuracy()*3		// and has better~ accuracy
 	             || location[i+1].getTime()-location[i].getTime() < 15 * 60 * 1000
 	              		&& location[i].getAccuracy() > location[i+1].getAccuracy()*3) {
 	                {
-	                    location[i].setProvider(location[i].getProvider() + "/jitter");
+	                    location[i].setProvider(location[i].getProvider() + "/jitter/worse");
 	                    try {
 	        				JSONObject newloc = new JSONObject();
 	        				newloc.put(DBAdapter.Contract.COLUMN_TIME, Long.toString(location[i].getTime()));
@@ -73,12 +77,13 @@ public class LocationUtils {
 	            }
 	        	
 	        	/* remove single spikes */
-	            else if (location[lastSane].distanceTo(location[i+1]) < location[lastSane].getAccuracy()
-	             || location[lastSane].distanceTo(location[i+1]) < location[i+1].getAccuracy())  { // i-1 and i+1 are close
-	                if (location[i].distanceTo(location[lastSane]) > location[lastSane].getAccuracy()
-	                 && location[i].distanceTo(location[i+1]) > location[i+1].getAccuracy())  // but not i
+	            else if ( (   location[lastSane].distanceTo(location[i+1]) < location[lastSane].getAccuracy()
+	                       || location[lastSane].distanceTo(location[i+1]) < location[i+1].getAccuracy()     )  // i-1 and i+1 are close
+	                   && ( location[i].distanceTo(location[lastSane]) > location[lastSane].getAccuracy()
+	                     && location[i].distanceTo(location[i+1]) > location[i+1].getAccuracy()          )  // but not i
+	                   && ( location[i].getAccuracy() > location[lastSane].getAccuracy()*2 || location[i].getAccuracy() > location[i+1].getAccuracy()*2) )  // and accuracy is worse
 	                {
-	                    location[i].setProvider(location[i].getProvider() + "/jitter");
+	                    location[i].setProvider(location[i].getProvider() + "/jitter/spike");
 	                    try {
 	        				JSONObject newloc = new JSONObject();
 	        				newloc.put(DBAdapter.Contract.COLUMN_TIME, Long.toString(location[i].getTime()));
@@ -100,7 +105,7 @@ public class LocationUtils {
 	                    // location[i] = null;
 	                    markings.setMarkingAt(i-1, DBAdapter.Contract.MARKED_JITTER);
 	                }
-	            }
+
 	            else {
 	            	lastSane++;
 	            }
@@ -109,7 +114,7 @@ public class LocationUtils {
 	        /* Last/Current position is not sane */
 	        if (location[location.length-1].getTime()-location[lastSane].getTime() < 15 * 60 * 1000			// if lastSane is in interval
 	        		&& location[location.length-1].getAccuracy() > location[lastSane].getAccuracy()*3) {	// and is significantly better
-                location[location.length-1].setProvider(location[location.length-1].getProvider() + "/jitter");
+                location[location.length-1].setProvider(location[location.length-1].getProvider() + "/jitter/last");
                 try {
     				JSONObject newloc = new JSONObject();
     				newloc.put(DBAdapter.Contract.COLUMN_TIME, Long.toString(location[location.length-1].getTime()));
