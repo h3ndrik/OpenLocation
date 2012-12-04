@@ -31,7 +31,12 @@ v0.3 (Alpha)
 - still multiple asynchttptransfers? (Android) *in progress*
 - Remove location jitter (Android) *in progress*
 - handling ':' and '-' in usernames (PHP) *in progress*
+- crash reports (synchronize sqlite in thread) (Android)
+- make token more random (+username,timestamp,+hash) (PHP)
 - give user-tables a prefix!! (PHP)
+- auto-register (Android)
+- max-zoom ++ (PHP)
+- extra table for friends / extra table per user (PHP)
 - refactor & clean code (Android)
 - (auto)clean locationcache (Android)
 - helper class for server api (Android)
@@ -42,6 +47,7 @@ v0.3 (Alpha)
 
 v0.4 (Alpha)
 ------------
+- more jitter removal (Android)
 - logout (PHP)
 - write error messages to serverlog everywhere(!) for debugging and testing (PHP)
 - Move code into (self-contained?) libraries, eg. auth (PHP)
