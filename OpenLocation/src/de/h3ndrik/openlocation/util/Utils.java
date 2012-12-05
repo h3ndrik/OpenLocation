@@ -3,7 +3,11 @@
  */
 package de.h3ndrik.openlocation.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -97,6 +101,31 @@ public class Utils { // TODO: Rename class?
 		System.arraycopy(compressed, 0, output, 0, compressedLength);	// trim array
 
 		return output;
+	}
+	
+	public static byte[] gzinflate(final byte[] compressed) {
+		Inflater inflater = new Inflater(true);
+		inflater.setInput(compressed, 0, compressed.length);
+		ByteArrayOutputStream outputstream = new ByteArrayOutputStream();
+		
+		byte[] buffer = new byte[1024];
+		while (!inflater.finished()) {
+			try {
+				inflater.inflate(buffer, 0, 1024);
+				outputstream.write(buffer);
+			}
+			catch (DataFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		inflater.end();
+
+		return outputstream.toByteArray();
 	}
 	
 	public static String getDomain(Context context) {

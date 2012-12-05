@@ -69,6 +69,13 @@ elseif (strcmp($request, 'deletelocation') == 0) {
 
 }
 
+/* Handle request "getuserpreferences" */
+elseif (strcmp($request, 'getuserpreferences') == 0) {
+
+  require("api/getuserpreferences.php");
+
+}
+
 
 /* Could not handle $request */
 else {

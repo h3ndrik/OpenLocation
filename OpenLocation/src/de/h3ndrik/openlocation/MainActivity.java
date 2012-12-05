@@ -4,10 +4,13 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import de.h3ndrik.openlocation.util.Server;
 import de.h3ndrik.openlocation.util.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 public class MainActivity extends SherlockFragmentActivity implements FriendsFragment.OnFriendSelectedListener {
 
 	/** Called when the activity is first created. */
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,6 +46,15 @@ public class MainActivity extends SherlockFragmentActivity implements FriendsFra
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, firstFragment).commit();
+            
+            if (android.os.Build.VERSION.SDK_INT > 9) {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+              }
+            Server server = new Server();
+            server.init(getBaseContext());
+            Server.API api = server.new API();
+	        Toast.makeText(getBaseContext(), api.getFriends(), Toast.LENGTH_LONG).show();
         }
 	}
 
