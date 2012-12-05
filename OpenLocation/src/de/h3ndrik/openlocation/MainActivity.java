@@ -26,8 +26,8 @@ public class MainActivity extends FragmentActivity {
                 return;
             }
 
-            // Create an instance of FriendsFragment
-            FriendsFragment firstFragment = new FriendsFragment();
+            // Create an instance of MapFragment
+            MapFragment firstFragment = new MapFragment();
 
             // In case this activity was started with special instructions from an Intent,
             // pass the Intent's extras to the fragment as arguments
