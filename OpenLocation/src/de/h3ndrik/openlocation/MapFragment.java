@@ -22,7 +22,7 @@ public class MapFragment extends Fragment {
         }
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.map_view, container, false);
+        return inflater.inflate(R.layout.fragment_map, container, false);
     }
     
     @Override
@@ -44,9 +44,9 @@ public class MapFragment extends Fragment {
     }
 
     public void updateMap(String focus) {
-        TextView article = (TextView) getActivity().findViewById(R.id.article);
-        article.setText(Ipsum.Articles[position]);
-        mCurrentPosition = position;
+        /*MapView map = (MapView) getActivity().findViewById(R.id.map);
+        map.setText("blablabla");*/
+        mCurrentFocus = focus;
     }
 
     @Override

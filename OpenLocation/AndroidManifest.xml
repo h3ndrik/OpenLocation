@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.h3ndrik.openlocation"
-    android:versionCode="28"
-    android:versionName="0.2" >
+    android:versionCode="29"
+    android:versionName="0.3" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -10,32 +10,25 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
+        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:allowBackup="true" >
+        android:theme="@style/AppTheme" >
         <activity
-            android:name="de.h3ndrik.openlocation.OpenLocationMainActivity"
-            android:label="@string/title_activity_open_location_main" >
+            android:name="de.h3ndrik.openlocation.MainActivity"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="de.h3ndrik.openlocation.OpenLocationPrefsActivity"
-            android:label="@string/title_activity_open_location_prefs" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="android.preference.PreferenceActivity" />
         </activity>
 
         <receiver
@@ -59,7 +52,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
