@@ -2,9 +2,15 @@ package de.h3ndrik.openlocation;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.location.Location;
+
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -54,6 +60,16 @@ public class MapFragment extends SherlockFragment {
         /*MapView map = (MapView) getActivity().findViewById(R.id.map);
         map.setText("blablabla");*/
         mCurrentFocus = focus;
+        MapController mMapController = mMapView.getController();
+        DBAdapter db = new DBAdapter(getActivity());
+		db.dbhelper.open_r();
+		Location location = db.dbhelper.getCurrentLocation();
+		if (location != null) {
+			mMapController.setZoom(15);
+			mMapController.setCenter(new GeoPoint(location));
+		}
+		db.dbhelper.close();
+        
     }
 
     @Override
