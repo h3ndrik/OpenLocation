@@ -9,7 +9,8 @@ import org.osmdroid.views.MapView;
 
 public class MapFragment extends Fragment {
 	final static String ARG_FOCUS = "focus";
-	String mCurrentFocus = "self";
+	private String mCurrentFocus = "self";
+	private MapView mMapView;
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -29,6 +30,9 @@ public class MapFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        
+        mMapView = (MapView) getActivity().findViewById(R.id.mapview);
+        mMapView.setBuiltInZoomControls(true);
 
         // During startup, check if there are arguments passed to the fragment.
         // onStart is a good place to do this because the layout has already been

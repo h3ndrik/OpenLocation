@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements FriendsFragment.OnFriendSelectedListener {
 
 	/** Called when the activity is first created. */
 	@Override
