@@ -4,6 +4,7 @@
     <string name="hello_world">Hello world!</string>
     
     <string name="menu_refresh">Aktualisieren</string>
+    <string name="menu_friends">Freunde</string>
     <string name="menu_settings">Einstellungen</string>
     <string name="menu_exit">Deaktivieren</string>
     
@@ -32,5 +33,6 @@
     
     <string name="title_activity_open_location_main">OpenLocation</string>
     <string name="title_activity_open_location_prefs">OpenLocation Einstellungen</string>
+    <string name="title_activity_preferences">OpenLocation Einstellungen</string>
 
 </resources>

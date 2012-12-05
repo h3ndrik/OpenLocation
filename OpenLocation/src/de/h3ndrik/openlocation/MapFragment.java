@@ -7,7 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import org.osmdroid.views.MapView;
 
-public class MapFragment extends Fragment {
+import com.actionbarsherlock.app.SherlockFragment;
+
+public class MapFragment extends SherlockFragment {
 	final static String ARG_FOCUS = "focus";
 	private String mCurrentFocus = "self";
 	private MapView mMapView;

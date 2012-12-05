@@ -1,13 +1,19 @@
 package de.h3ndrik.openlocation;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
+import de.h3ndrik.openlocation.util.Utils;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity implements FriendsFragment.OnFriendSelectedListener {
+public class MainActivity extends SherlockFragmentActivity implements FriendsFragment.OnFriendSelectedListener {
 
 	/** Called when the activity is first created. */
 	@Override
@@ -71,5 +77,45 @@ public class MainActivity extends FragmentActivity implements FriendsFragment.On
             transaction.commit();
         }
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	getSupportMenuInflater().inflate(R.menu.main, menu);
+    	return true;
+    }
+    
+    @Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_friends:
+	        FriendsFragment friendsFragment = (FriendsFragment)
+	                getSupportFragmentManager().findFragmentById(R.id.fragment_friends);
+
+	        if (friendsFragment != null) {
+	            // friends is already there?
+	        }
+	        else {
+	            // If the fragment is not available, we're in the one-pane layout and must swap fragments...
+	            FriendsFragment newFragment = new FriendsFragment();
+	            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+	            transaction.replace(R.id.fragment_container, newFragment);
+	            transaction.addToBackStack(null);
+	            transaction.commit();
+	        }
+			break;
+		case R.id.menu_settings:
+			Intent intent = new Intent(MainActivity.this, PreferencesActivity.class);
+			startActivity(intent);
+			break;
+		case R.id.menu_exit:
+			Utils.stopReceiver(getBaseContext());
+			Toast.makeText(getBaseContext(),
+					getResources().getString(R.string.msg_updatesdisabled),
+					Toast.LENGTH_SHORT).show();
+			finish();
+			break;
+		}
+		return false;
+	}
 
 }

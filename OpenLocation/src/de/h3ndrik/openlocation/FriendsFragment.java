@@ -1,5 +1,7 @@
 package de.h3ndrik.openlocation;
 
+import com.actionbarsherlock.app.SherlockListFragment;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class FriendsFragment extends ListFragment {
+public class FriendsFragment extends SherlockListFragment {
 	OnFriendSelectedListener mCallback;
 	
 	// The container Activity must implement this interface so the fragment can deliver messages
