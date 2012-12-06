@@ -28,6 +28,7 @@ public class LocationUtils {
                 location[i].setSpeed(Float.valueOf(row.getString(DBAdapter.Contract.COLUMN_SPEED)).floatValue());
                 location[i].setBearing(Float.valueOf(row.getString(DBAdapter.Contract.COLUMN_BEARING)).floatValue());
                 location[i].setProvider(row.getString(DBAdapter.Contract.COLUMN_PROVIDER));
+                row = null;
             }
             catch (JSONException e) {
                 // TODO Auto-generated catch block

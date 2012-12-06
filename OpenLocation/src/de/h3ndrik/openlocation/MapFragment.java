@@ -16,7 +16,13 @@ import org.osmdroid.views.MapView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
+import de.h3ndrik.openlocation.util.Server;
+import de.h3ndrik.openlocation.util.Utils;
+import de.h3ndrik.openlocation.util.Server.API;
+
 public class MapFragment extends SherlockFragment {
+	private static final String DEBUG_TAG = "MapFragment"; // for logging purposes
+
 	final static String ARG_FOCUS = "focus";
 	private String mCurrentFocus = "self";
 	private MapView mMapView;
@@ -58,18 +64,20 @@ public class MapFragment extends SherlockFragment {
     }
 
     public void updateMap(String focus) {
-        /*MapView map = (MapView) getActivity().findViewById(R.id.map);
-        map.setText("blablabla");*/
         mCurrentFocus = focus;
+        if (focus.equals("self"))
+        	focus = Utils.getUsername(getActivity());
+        
+        Server server = new Server();
+        server.init(getActivity());
+        Server.API api = server.new API();
+        Location[] locations = api.getLocation(focus, null, null);
+        
         MapController mMapController = mMapView.getController();
-        DBAdapter db = new DBAdapter(getActivity());
-		db.dbhelper.open_r();
-		Location location = db.dbhelper.getCurrentLocation();
-		if (location != null) {
-			mMapController.setZoom(15);
-			mMapController.setCenter(new GeoPoint(location));
+		if (locations != null) {
+			mMapController.setZoom(14);
+			mMapController.setCenter(new GeoPoint(locations[locations.length-1]));
 		}
-		db.dbhelper.close();
         
     }
 

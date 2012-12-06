@@ -24,8 +24,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.h3ndrik.openlocation.DBAdapter;
+
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
@@ -39,18 +42,6 @@ import android.util.Log;
 public class Server {
 	private static final String DEBUG_TAG = "Server"; // for logging purposes
 	Context context;
-	
-	public static String[]	friendsArray = 
-	    {
-        "Henry IV (1)",   
-        "Henry V",
-        "Henry VIII",       
-        "Richard II",
-        "Richard III",
-        "Merchant of Venice",  
-        "Othello",
-        "King Lear"
-};
 
 	public void connect() {
 		throw new UnsupportedOperationException();
@@ -162,13 +153,65 @@ public class Server {
 	}
 	
 	public class API {
-		public void getLocation(String target, Long starttime, Long endtime) throws Exception {
-			throw new UnsupportedOperationException();
-			// get sender
-			// get token
-			// get target
+		public Location[] getLocation(String target, Long starttime, Long endtime) {
+			JSONObject request = new JSONObject();
+			try {
+				request.put("request", "getlocation");
+				request.put("sender", Utils.getUsername(context));
+				request.put("token", getToken());
+				request.put("user", target);
+				if (starttime != null)
+					request.put("starttime", starttime);
+				if (endtime != null)
+					request.put("endtime", endtime);
+			}
+			catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			JSONObject result = send(request);
+			
+			if (result == null)
+				return null;
+			
+			JSONArray data = null;
+			try {
+				data = result.getJSONArray("data");
+			}
+			catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			/* prepare location array */
+	        Location[] location = new Location[data.length()];
+	        for (int i=0; i < data.length(); i++) {
+	            try {
+	                JSONObject row = data.getJSONObject(i);
+	                location[i] = new Location("removeJitter");
+	                location[i].setTime(Long.valueOf(row.getString(DBAdapter.Contract.COLUMN_TIME)).longValue());
+	                location[i].setLatitude(Double.valueOf(row.getString(DBAdapter.Contract.COLUMN_LATITUDE)).doubleValue());
+	                location[i].setLongitude(Double.valueOf(row.getString(DBAdapter.Contract.COLUMN_LONGITUDE)).doubleValue());
+	                location[i].setAltitude(Double.valueOf(row.getString(DBAdapter.Contract.COLUMN_ALTITUDE)).doubleValue());
+	                location[i].setAccuracy(Float.valueOf(row.getString(DBAdapter.Contract.COLUMN_ACCURACY)).floatValue());
+	                location[i].setSpeed(Float.valueOf(row.getString(DBAdapter.Contract.COLUMN_SPEED)).floatValue());
+	                location[i].setBearing(Float.valueOf(row.getString(DBAdapter.Contract.COLUMN_BEARING)).floatValue());
+	                location[i].setProvider(row.getString(DBAdapter.Contract.COLUMN_PROVIDER));
+	                row = null;
+	            }
+	            catch (JSONException e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	            }
+	            catch (NumberFormatException e) {
+	                e.printStackTrace();
+	            }
+	        }
 
+	        return location;
 		}
+		
 		public void setLocation() {
 			throw new UnsupportedOperationException();
 
@@ -177,7 +220,7 @@ public class Server {
 			throw new UnsupportedOperationException();
 
 		}
-		public String getFriends() {
+		public void updateFriends() {
 			JSONObject request = new JSONObject();
 			try {
 				request.put("request", "getfriends");
@@ -185,9 +228,32 @@ public class Server {
 				request.put("token", getToken());
 				JSONObject result = send(request);
 				JSONArray friends = result.getJSONArray("data");
-				JSONArray pending = result.getJSONArray("pending");
-				JSONArray incoming = result.getJSONArray("incoming");
-					return friends.join(",");
+				JSONArray friends_pending = result.getJSONArray("pending");
+				JSONArray friends_incoming = result.getJSONArray("incoming");
+				SharedPreferences cache = context.getSharedPreferences("cache", Context.MODE_MULTI_PROCESS);
+				SharedPreferences.Editor editor = cache.edit();
+				editor.putString("friends", friends.toString());
+				editor.putString("friends_pending", friends_pending.toString());
+				editor.putString("friends_incoming", friends_incoming.toString());
+				editor.commit();
+				Log.d(DEBUG_TAG, "updated SP, friends: " + friends.toString());
+			}
+			catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		public String[] getFriends() {
+			updateFriends();
+			SharedPreferences cache = context.getSharedPreferences("cache", Context.MODE_MULTI_PROCESS);
+			try {
+				JSONArray friends_jsonarray = new JSONArray(cache.getString("friends", "[]"));
+				String[] friends = new String[friends_jsonarray.length()];
+				for(int i=0; i<friends_jsonarray.length(); i++) {
+					friends[i] = friends_jsonarray.getString(i);
+				}
+				return friends;
 			}
 			catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -195,6 +261,7 @@ public class Server {
 			}
 			return null;
 		}
+		
 		public void requestFriend() {
 			throw new UnsupportedOperationException();
 			// This is sendrequestfriend!
@@ -221,9 +288,12 @@ public class Server {
 				if (result == null)
 					return null;
 				String token = result.getString("token");
-				if (token.length() == 32)
-					SP.edit().putString("token", token);
+				if (token.length() == 32) {
+					SharedPreferences.Editor editor = SP.edit();
+					editor.putString("token", token);
+					editor.commit();
 					return token;
+				}
 			}
 			catch (JSONException e) {
 				// TODO Auto-generated catch block

@@ -51,10 +51,6 @@ public class MainActivity extends SherlockFragmentActivity implements FriendsFra
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
               }
-            Server server = new Server();
-            server.init(getBaseContext());
-            Server.API api = server.new API();
-	        Toast.makeText(getBaseContext(), api.getFriends(), Toast.LENGTH_LONG).show();
         }
 	}
 
@@ -106,6 +102,7 @@ public class MainActivity extends SherlockFragmentActivity implements FriendsFra
 
 	        if (friendsFragment != null) {
 	            // friends is already there?
+
 	        }
 	        else {
 	            // If the fragment is not available, we're in the one-pane layout and must swap fragments...
